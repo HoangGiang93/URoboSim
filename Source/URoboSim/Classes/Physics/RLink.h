@@ -10,7 +10,7 @@
 class ARModel;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UROBOSIM_API URLink : public UObject
+class UROBOSIM_API URLink : public URStaticMeshComponent
 {
 	GENERATED_BODY()
 

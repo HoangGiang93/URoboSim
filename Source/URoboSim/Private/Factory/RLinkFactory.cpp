@@ -67,6 +67,7 @@ void URLinkBuilder::Init(UObject* InOuter, USDFLink* InLinkDescription)
 URLink* URLinkBuilder::NewLink()
 {
   Link = NewObject<URLink>(Model, FName((LinkDescription->Name).GetCharArray().GetData()));
+  Link->RegisterComponent();
   SetPose(LinkDescription->Pose);
 
   // Add the Collision Components to the Link
@@ -152,8 +153,18 @@ void URLinkBuilder::SetCollisions()
 
 void URLinkBuilder::SetCollision(USDFCollision* InCollision)
 {
-  URStaticMeshComponent* LinkComponent = NewObject<URStaticMeshComponent>(Link, FName((InCollision->Name).GetCharArray().GetData()));
-  LinkComponent->RegisterComponent();
+  URStaticMeshComponent* LinkComponent;
+  if(Link->Collisions.Num()==0)
+    {
+      LinkComponent = Link;
+      Link->Collisions.Add(LinkComponent);
+    }
+  else
+    {
+      LinkComponent = NewObject<URStaticMeshComponent>(Link, FName((InCollision->Name).GetCharArray().GetData()));
+      LinkComponent->RegisterComponent();
+    }
+
   if(Model->GetRootComponent() == nullptr)
     {
       Model->SetRootComponent(LinkComponent);
@@ -185,9 +196,9 @@ void URLinkBuilder::SetCollision(USDFCollision* InCollision)
         {
           LinkComponent->AttachToComponent(Link->Collisions[0], FAttachmentTransformRules::KeepWorldTransform);
           LinkComponent->WeldTo(Link->Collisions[0]);
+          Link->Collisions.Add(LinkComponent);
         }
       LinkComponent->bVisible = false;
-      Link->Collisions.Add(LinkComponent);
     }
   else
     {
@@ -205,9 +216,9 @@ void URLinkBuilder::SetInertial(USDFLinkInertial* InInertial)
     {
       Collision->SetMassOverrideInKg(NAME_None, 0.001, true);
     }
-  if(Link->GetCollision())
+  if(Link)
     {
-      Link->GetCollision()->SetMassOverrideInKg(NAME_None, InInertial->Mass, true);
+      Link->SetMassOverrideInKg(NAME_None, InInertial->Mass, true);
     }
 }
 
@@ -244,10 +255,7 @@ void URLinkBuilder::SetSimulateGravity(bool InUseGravity)
     {
       Collision->SetEnableGravity(false);
     }
-  if(Link->GetCollision())
-    {
-      Link->GetCollision()->SetEnableGravity(InUseGravity);
-    }
+  Link->SetEnableGravity(InUseGravity);
 
   for(URStaticMeshComponent* Visual : Link->Visuals)
     {
