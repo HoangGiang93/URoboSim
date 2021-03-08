@@ -89,20 +89,20 @@ void URModelBuilder::BuildKinematicTree()
 
       if(!Child->bAttachedToParent)
         {
-          Child->GetCollision()->AttachToComponent(Joint.Value->Parent->GetCollision(), FAttachmentTransformRules::KeepWorldTransform);
-          // Child->GetCollision()->RegisterComponent();
-          // Child->GetCollision()->RegisterComponentWithWorld(Model->GetWorld());
+          Child->AttachToComponent(Joint.Value->Parent, FAttachmentTransformRules::KeepWorldTransform);
+          // Child->RegisterComponent();
+          // Child->RegisterComponentWithWorld(Model->GetWorld());
           Child->bAttachedToParent = true;
           // if(Joint.Value->Child->GetName().Equals(TEXT("fr_caster_l_wheel_link")))
           //   {
           //   }
-          // UE_LOG(LogTemp, Error, TEXT("Joint: %s Parent: %s Child: %s"), *Joint.Value->GetName(), *Joint.Value->Parent->GetCollision()->GetName(), *Joint.Value->Child->GetCollision()->GetName());
+          // UE_LOG(LogTemp, Error, TEXT("Joint: %s Parent: %s Child: %s"), *Joint.Value->GetName(), *Joint.Value->Parent->GetName(), *Joint.Value->Child->GetName());
         }
       // else if(!Parent->bAttachedToParent)
       //   {
-      //     Parent->GetCollision()->AttachToComponent(Joint.Value->Child->GetCollision(), FAttachmentTransformRules::KeepWorldTransform);
-      //     // Parent->GetCollision()->RegisterComponent();
-      //     // Parent->GetCollision()->RegisterComponentWithWorld(Model->GetWorld());
+      //     Parent->AttachToComponent(Joint.Value->Child, FAttachmentTransformRules::KeepWorldTransform);
+      //     // Parent->RegisterComponent();
+      //     // Parent->RegisterComponentWithWorld(Model->GetWorld());
       //     Parent->bAttachedToParent = true;
       //   }
       Parent->AddJoint(Joint.Value);
@@ -113,9 +113,9 @@ void URModelBuilder::SetConstraintPosition(URJoint* InJoint)
 {
   if(InJoint->bUseParentModelFrame)
     {
-      InJoint->Constraint->AttachToComponent(InJoint->Child->GetCollision(), FAttachmentTransformRules::KeepWorldTransform);
-      InJoint->Constraint->AttachToComponent(InJoint->Parent->GetCollision(), FAttachmentTransformRules::KeepWorldTransform);
-      InJoint->Constraint->SetWorldLocation(InJoint->Child->GetCollision()->GetComponentLocation());
+      InJoint->Constraint->AttachToComponent(InJoint->Child, FAttachmentTransformRules::KeepWorldTransform);
+      InJoint->Constraint->AttachToComponent(InJoint->Parent, FAttachmentTransformRules::KeepWorldTransform);
+      InJoint->Constraint->SetWorldLocation(InJoint->Child->GetComponentLocation());
       InJoint->Constraint->AddRelativeLocation(InJoint->Pose.GetLocation());
       InJoint->Constraint->AddRelativeRotation(InJoint->Pose.GetRotation());
     }
@@ -125,6 +125,6 @@ void URModelBuilder::SetConstraintPosition(URJoint* InJoint)
       UE_LOG(LogTemp, Warning, TEXT("Does't use parent frame"));
 
       // InJoint->Constraint->SetPosition(InJoint);
-      InJoint->Constraint->AttachToComponent(InJoint->Child->GetCollision(), FAttachmentTransformRules::KeepRelativeTransform);
+      InJoint->Constraint->AttachToComponent(InJoint->Child, FAttachmentTransformRules::KeepRelativeTransform);
     }
 }

@@ -22,12 +22,12 @@ void URobotCommandsComponent::MoveWithVelocity(FVector InVelocity, float DeltaTi
 	{
 		if(Link.Value->GetNumCollisions() > 0)
 		{
-			Link.Value->GetCollision()->SetSimulatePhysics(false);
-			FRotator Orientation = Link.Value->GetCollision()->GetComponentRotation();
-			FVector Position = Link.Value->GetCollision()->GetComponentLocation();
+			Link.Value->SetSimulatePhysics(false);
+			FRotator Orientation = Link.Value->GetComponentRotation();
+			FVector Position = Link.Value->GetComponentLocation();
 			FVector DistanceTraveld = Orientation.Quaternion().RotateVector(InVelocity*DeltaTime);
-			Link.Value->GetCollision()->SetWorldLocation(DistanceTraveld + Position, false, nullptr, ETeleportType::TeleportPhysics);
-			Link.Value->GetCollision()->SetSimulatePhysics(true);
+			Link.Value->SetWorldLocation(DistanceTraveld + Position, false, nullptr, ETeleportType::TeleportPhysics);
+			Link.Value->SetSimulatePhysics(true);
 		}
 	}
 }

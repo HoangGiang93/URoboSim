@@ -93,9 +93,9 @@ void URDonbotGripperController::Init()
             {
                 GraspComponent = GraspComp;
                 URLink* ReferenceLink = GetOwner()->Links[GraspCompSetting.GripperName];
-                GraspComponent->AttachToComponent(ReferenceLink->GetCollision(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+                GraspComponent->AttachToComponent(ReferenceLink, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
                 GraspComponent->AddRelativeLocation(GraspCompSetting.ToolCenterPoint);
-                GraspComponent->Init(ReferenceLink->GetCollision());
+                GraspComponent->Init(ReferenceLink);
             }
         }
 

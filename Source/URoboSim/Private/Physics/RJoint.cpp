@@ -45,7 +45,7 @@ void URJoint::SetParentChild(URLink* InParent, URLink* InChild)
   Child = InChild;
   Parent = InParent;
 
-  Constraint->SetParentChild(Parent->GetCollision(), Child->GetCollision());
+  Constraint->SetParentChild(Parent, Child);
 }
 
 float URJoint::GetJointPosition()

@@ -62,7 +62,7 @@ FVector URHeadTrajectoryController::CalculateNewViewDirection()
               UE_LOG(LogTemp, Error, TEXT("ReferenceLink %s not found"), *FrameId);
               return FVector();
             }
-          ReferenceLinkTransform = ReferenceLink->GetCollision()->GetComponentTransform();
+          ReferenceLinkTransform = ReferenceLink->GetComponentTransform();
         }
 
       TArray<URStaticMeshComponent*> ActorComponents;

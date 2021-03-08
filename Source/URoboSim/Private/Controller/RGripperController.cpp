@@ -213,16 +213,16 @@ void URGripperController::Init()
             {
               GraspComponent = GraspComp;
               URLink* ReferenceLink = GetOwner()->Links[GraspCompSetting.GripperName];
-              GraspComponent->AttachToComponent(ReferenceLink->GetCollision(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+              GraspComponent->AttachToComponent(ReferenceLink, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
               GraspComponent->AddRelativeLocation(GraspCompSetting.ToolCenterPoint);
 
               if(bUseMultipleConstraints)
                 {
-                  GraspComponent->Init(RightFinger->Child->GetCollision(), LeftFinger->Child->GetCollision());
+                  GraspComponent->Init(RightFinger->Child, LeftFinger->Child);
                 }
               else
                 {
-                  GraspComponent->Init(ReferenceLink->GetCollision());
+                  GraspComponent->Init(ReferenceLink);
                 }
             }
         }

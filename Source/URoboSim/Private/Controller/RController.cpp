@@ -64,7 +64,7 @@ void URCameraController::PerceiveObject()
         {
 
           URLink* ReferenceLink = GetOwner()->Links.FindRef(TEXT("base_footprint"));
-          FTransform ReferenceLinkTransform = ReferenceLink->GetCollision()->GetComponentTransform();
+          FTransform ReferenceLinkTransform = ReferenceLink->GetComponentTransform();
           FVector Location = ReferenceLinkTransform.GetLocation();
           Location.Z = 0.0f;
           ReferenceLinkTransform.SetLocation(Location);
@@ -145,8 +145,8 @@ void URTFController::Init()
       Time = 0.0f;
       for(auto& Link : GetOwner()->Links)
         {
-          Link.Value->GetCollision()->SetSimulatePhysics(false);
-          // Link.Value->GetCollision()->SetCollisionProfileName(false);
+          Link.Value->SetSimulatePhysics(false);
+          // Link.Value->SetCollisionProfileName(false);
         }
     }
 }

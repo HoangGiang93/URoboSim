@@ -282,7 +282,7 @@ void URJointController::Init()
       SwitchMode(Mode, true);
       for(auto & Link: GetOwner()->Links)
         {
-          Link.Value->GetCollision()->SetEnableGravity(false);
+          Link.Value->SetEnableGravity(false);
           if(bDisableCollision)
           {
             Link.Value->DisableCollision();
@@ -334,7 +334,7 @@ void URJointController::SwitchMode(UJointControllerMode InMode, bool IsInit)
 
   for(auto& Joint : GetOwner()->Joints)
     {
-      Joint.Value->Child->GetCollision()->SetSimulatePhysics(bEnablePhysics);
+      Joint.Value->Child->SetSimulatePhysics(bEnablePhysics);
     }
 }
 
