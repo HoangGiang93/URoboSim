@@ -98,6 +98,10 @@ void URModelBuilder::BuildKinematicTree()
           //   }
           // UE_LOG(LogTemp, Error, TEXT("Joint: %s Parent: %s Child: %s"), *Joint.Value->GetName(), *Joint.Value->Parent->GetName(), *Joint.Value->Child->GetName());
         }
+      else
+        {
+          UE_LOG(LogTem, Error, TEXT("JointName with parent %s"), *GetName());
+        }
       // else if(!Parent->bAttachedToParent)
       //   {
       //     Parent->AttachToComponent(Joint.Value->Child, FAttachmentTransformRules::KeepWorldTransform);
