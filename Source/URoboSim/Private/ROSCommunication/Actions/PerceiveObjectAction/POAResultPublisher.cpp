@@ -19,7 +19,7 @@ void URPerceiveObjectActionResultPublisher::SetOwner(UObject* InOwner)
       // Make sure the object is in the world
       if (GetWorld()->ContainsActor((*Itr)))
         {
-          UE_LOG(LogTF, Warning, TEXT("Bind TFPublisher"));
+          // UE_LOG(LogTF, Warning, TEXT("Bind TFPublisher"));
           OnObjectDetected.AddUObject(*Itr, &ATFPublisher::AddObject);
         }
     }

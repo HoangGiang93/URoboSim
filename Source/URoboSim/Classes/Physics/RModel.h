@@ -63,7 +63,7 @@ public:
 virtual void Tick(float DeltaTime) override;
 
 void AddJoint(URJoint* Joint);
-void AddLink(URLink* Link);
+void AddLink(URLink* Link, FString InName);
 // Load model
 
 };

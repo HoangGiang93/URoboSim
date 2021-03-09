@@ -66,8 +66,9 @@ void URLinkBuilder::Init(UObject* InOuter, USDFLink* InLinkDescription)
 
 URLink* URLinkBuilder::NewLink()
 {
-  Link = NewObject<URLink>(Model, FName((LinkDescription->Name).GetCharArray().GetData()));
-  Link->RegisterComponent();
+  Link = nullptr;
+  // Link = NewObject<URLink>(Model, FName((LinkDescription->Name).GetCharArray().GetData()));
+  // Link->RegisterComponent();
   SetPose(LinkDescription->Pose);
 
   // Add the Collision Components to the Link
@@ -154,10 +155,13 @@ void URLinkBuilder::SetCollisions()
 void URLinkBuilder::SetCollision(USDFCollision* InCollision)
 {
   URStaticMeshComponent* LinkComponent;
-  if(Link->Collisions.Num()==0)
+  if(!Link)
     {
+      Link = NewObject<URLink>(Model, FName((InCollision->Name).GetCharArray().GetData()));
+      Link->CreationMethod = EComponentCreationMethod::Instance;
+      Link->RegisterComponent();
       LinkComponent = Link;
-      Link->Collisions.Add(LinkComponent);
+      // Link->Collisions.Add(LinkComponent);
     }
   else
     {
@@ -196,8 +200,8 @@ void URLinkBuilder::SetCollision(USDFCollision* InCollision)
         {
           LinkComponent->AttachToComponent(Link->Collisions[0], FAttachmentTransformRules::KeepWorldTransform);
           LinkComponent->WeldTo(Link->Collisions[0]);
-          Link->Collisions.Add(LinkComponent);
         }
+      Link->Collisions.Add(LinkComponent);
       LinkComponent->bVisible = false;
     }
   else

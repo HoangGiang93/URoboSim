@@ -40,7 +40,7 @@ void URModelBuilder::LoadLinks(FVector InLocation)
             {
               Model->BaseLink = TempLink;
             }
-          Model->AddLink(TempLink);
+          Model->AddLink(TempLink, Link->Name);
         }
       else
         {
@@ -87,12 +87,14 @@ void URModelBuilder::BuildKinematicTree()
       SetConstraintPosition(Joint.Value);
       Joint.Value->Constraint->ConnectToComponents();
 
-      if(!Child->bAttachedToParent)
+      if(!Child->bAttachedToParent && (Parent->bAttachedToParent || Model->GetRootComponent() == Parent))
         {
+
           Child->AttachToComponent(Joint.Value->Parent, FAttachmentTransformRules::KeepWorldTransform);
           // Child->RegisterComponent();
           // Child->RegisterComponentWithWorld(Model->GetWorld());
           Child->bAttachedToParent = true;
+
           // if(Joint.Value->Child->GetName().Equals(TEXT("fr_caster_l_wheel_link")))
           //   {
           //   }
@@ -100,7 +102,7 @@ void URModelBuilder::BuildKinematicTree()
         }
       else
         {
-          UE_LOG(LogTem, Error, TEXT("JointName with parent %s"), *GetName());
+          Parent->AttachToComponent(Joint.Value->Child, FAttachmentTransformRules::KeepWorldTransform);
         }
       // else if(!Parent->bAttachedToParent)
       //   {
@@ -108,6 +110,7 @@ void URModelBuilder::BuildKinematicTree()
       //     // Parent->RegisterComponent();
       //     // Parent->RegisterComponentWithWorld(Model->GetWorld());
       //     Parent->bAttachedToParent = true;
+
       //   }
       Parent->AddJoint(Joint.Value);
     }

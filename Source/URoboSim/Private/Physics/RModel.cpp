@@ -29,9 +29,16 @@ void ARModel::Tick(float DeltaTime)
   Super::Tick(DeltaTime);
 }
 
-void ARModel::AddLink(URLink* Link)
+void ARModel::AddLink(URLink* Link, FString InName = TEXT("Default"))
 {
-  Links.Add(Link->GetName(), Link);
+  if(InName.Equals(TEXT("Default")))
+    {
+      Links.Add(Link->GetName(), Link);
+    }
+  else
+    {
+      Links.Add(InName, Link);
+    }
 }
 
 void ARModel::AddJoint(URJoint* Joint)

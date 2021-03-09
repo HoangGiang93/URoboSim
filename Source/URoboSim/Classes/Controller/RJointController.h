@@ -35,11 +35,11 @@ class UROBOSIM_API URJointController : public URController
   UPROPERTY(EditAnywhere)
     FString BaseLink;
 
-  UPROPERTY(EditAnywhere)
-    float RevolutAccuracy;
+  /* UPROPERTY(EditAnywhere) */
+  /*   float RevolutAccuracy; */
 
-  UPROPERTY(EditAnywhere)
-    float PrismaticAccuracy;
+  /* UPROPERTY(EditAnywhere) */
+  /*   float PrismaticAccuracy; */
 
 
   UPROPERTY(EditAnywhere)
