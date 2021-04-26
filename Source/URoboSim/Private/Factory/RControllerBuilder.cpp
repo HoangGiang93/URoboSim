@@ -1,6 +1,6 @@
 #include "Factory/RControllerBuilder.h"
-#include "Controller/ControllerType/RBaseController.h"
-#include "Controller/ControllerType/RJointController.h"
+#include "Controller/ControllerType/BaseController/RBaseController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRControllerBuilder, Log, All);
 

@@ -1,6 +1,6 @@
 #include "Factory/RModelFactory.h"
-#include "Controller/ControllerType/RJointController.h"
-#include "Controller/ControllerType/RBaseController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
+#include "Controller/ControllerType/BaseController/RBaseController.h"
 #include "Controller/RControllerComponent.h"
 #include "ROSCommunication/RROSCommunicationComponent.h"
 #include "ROSCommunication/Publisher/RJointStatePublisher.h"

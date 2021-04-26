@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RPublisher.h"
-#include "Controller/ControllerType/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
 // clang-format off
 #include "RJointTrajectoryControllerStatePublisher.generated.h"
 // clang-format on

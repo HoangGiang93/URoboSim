@@ -1,4 +1,4 @@
-#include "Controller/ControllerType/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
 #include "Conversions.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -116,11 +116,7 @@ void URJointController::SetMode()
 
 void URJointController::Tick(const float &InDeltaTime)
 {
-  if (!GetOwner())
-  {
-    return;
-  }
-  else
+  if (GetOwner())
   {
     switch (State)
     {

@@ -1,6 +1,6 @@
 #include "ROSCommunication/Service/Client/RGetJointsClient.h"
 #include "TimerManager.h"
-#include "Controller/ControllerType/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRGetJointsClient, Log, All);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controller/ControllerType/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointController.h"
 #include "ROSCommunication/Action/Server/RActionServer.h"
 // clang-format off
 #include "FJTAGoalSubscriber.generated.h"

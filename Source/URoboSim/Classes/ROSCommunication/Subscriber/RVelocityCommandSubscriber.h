@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controller/ControllerType/RBaseController.h"
+#include "Controller/ControllerType/BaseController/RBaseController.h"
 #include "Controller/RControllerComponent.h"
 #include "RSubscriber.h"
 // clang-format off

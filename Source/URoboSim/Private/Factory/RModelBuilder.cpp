@@ -67,7 +67,6 @@ void URModelBuilder::LoadLinks(USDFModel *&SDFModel)
 // Load joints
 void URModelBuilder::LoadJoints(USDFModel *&SDFModel)
 {
-  
   for (USDFJoint *&SDFJoint : SDFModel->Joints)
   {
     if (SDFJoint->Type.Equals("continuous"))
