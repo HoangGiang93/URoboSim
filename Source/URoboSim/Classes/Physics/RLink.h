@@ -25,11 +25,11 @@ public:
 
 	const USceneComponent *GetPoseComponent() const { return PoseComponent; }
 
-	const TArray<UStaticMeshComponent *> GetVisualMeshes() const { return VisualMeshes; }
+	TArray<UStaticMeshComponent *> GetVisualMeshes() const { return VisualMeshes; }
 
 	void AddVisualMesh(UStaticMeshComponent *&VisualMesh) { VisualMeshes.Add(VisualMesh); }
 
-	const TArray<UStaticMeshComponent *> GetCollisionMeshes() const { return CollisionMeshes; }
+	TArray<UStaticMeshComponent *> GetCollisionMeshes() const { return CollisionMeshes; }
 
 	void AddCollisionMesh(UStaticMeshComponent *&CollisionMesh) { CollisionMeshes.Add(CollisionMesh); }
 

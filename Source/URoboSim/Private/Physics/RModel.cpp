@@ -17,11 +17,18 @@ ARModel::ARModel()
 // Called every frame
 void ARModel::Tick(float DeltaTime)
 {
+  HitComponents.Empty();
   Super::Tick(DeltaTime);
   for (URJoint *&Joint : Joints)
   {
     Joint->Tick(DeltaTime);
   }
+}
+
+// Event when this actor bumps into a blocking object, or blocks another actor that bumps into it
+void ARModel::NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+{
+  HitComponents.Emplace(MyComp, OtherComp);
 }
 
 // Called when the game starts or when spawned

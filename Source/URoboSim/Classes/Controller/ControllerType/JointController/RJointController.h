@@ -99,7 +99,7 @@ public:
 };
 
 UCLASS(Blueprintable, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
-class UROBOSIM_API URJointController final : public URController
+class UROBOSIM_API URJointController : public URController
 {
   GENERATED_BODY()
 
@@ -107,16 +107,16 @@ public:
   URJointController();
 
 public:
-  void Tick(const float &InDeltaTime) override;
+  virtual void Tick(const float &InDeltaTime) override;
 
-  void Init() override;
+  virtual void Init() override;
+
+  virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) override;
 
 public:
   void SetJointNames(const TArray<FString> &InNames);
 
   void SetMode();
-
-  void SetControllerParameters(URControllerParameter *&ControllerParameters) override;
 
   const TArray<FTrajectoryStatus> GetTrajectoryStatusArray() const { return TrajectoryStatusArray; }
 

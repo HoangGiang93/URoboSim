@@ -14,6 +14,24 @@
 class URPluginComponent;
 
 USTRUCT()
+struct FHitComponent
+{
+  GENERATED_BODY()
+
+public:
+  FHitComponent() {}
+
+  FHitComponent(UPrimitiveComponent *InMyComponent, UPrimitiveComponent *InOtherComponent)
+  : MyComponent(InMyComponent), OtherComponent(InOtherComponent) {}
+
+  UPROPERTY(VisibleAnywhere)
+  UPrimitiveComponent *MyComponent = nullptr;
+
+  UPROPERTY(VisibleAnywhere)
+  UPrimitiveComponent *OtherComponent = nullptr;
+};
+
+USTRUCT()
 struct FEnableGravity
 {
   GENERATED_BODY()
@@ -40,6 +58,9 @@ public:
 public:
   // Called every frame
   virtual void Tick(float DeltaTime) override;
+
+  // Event when this actor bumps into a blocking object, or blocks another actor that bumps into it
+  virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
 
 protected:
   // Called when the game starts or when spawned
@@ -68,11 +89,13 @@ public:
 
   class URSensor *GetSensor(const FString &SensorName) const;
 
+  TArray<FHitComponent> GetHitComponents() const { return HitComponents; };
+
 public:
   UPROPERTY(EditAnywhere)
   FEnableGravity EnableGravity;
 
-protected:
+private:
   UPROPERTY(VisibleAnywhere)
   TArray<URJoint *> Joints;
 
@@ -81,6 +104,9 @@ protected:
 
   UPROPERTY(EditAnywhere)
   TArray<URPluginComponent *> Plugins;
+
+  UPROPERTY(VisibleAnywhere)
+  TArray<FHitComponent> HitComponents;
 
   // TArray<URGraspComponent *> Grippers;
 };

@@ -1,6 +1,6 @@
 #include "Factory/RControllerBuilder.h"
 #include "Controller/ControllerType/BaseController/RBaseController.h"
-#include "Controller/ControllerType/JointController/RJointController.h"
+#include "Controller/ControllerType/JointController/RFingerGripperController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRControllerBuilder, Log, All);
 
@@ -41,7 +41,15 @@ void URControllerBuilder::Build()
 
 URController *URControllerBuilder::CreateController(ARModel *&InOwner, const TPair<FString, URControllerParameter *> ControllerParameters)
 {
-  if (Cast<URJointControllerParameter>(ControllerParameters.Value))
+  if (Cast<URFingerGripperControllerParameter>(ControllerParameters.Value))
+  {
+    return NewObject<URFingerGripperController>(InOwner, *ControllerParameters.Key);
+  }
+  else if (Cast<URGripperControllerParameter>(ControllerParameters.Value))
+  {
+    return NewObject<URGripperController>(InOwner, *ControllerParameters.Key);
+  }
+  else if (Cast<URJointControllerParameter>(ControllerParameters.Value))
   {
     return NewObject<URJointController>(InOwner, *ControllerParameters.Key);
   }
