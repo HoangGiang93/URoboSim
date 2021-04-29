@@ -40,7 +40,8 @@ void FRFJTAGoalSubscriberCallback::Callback(TSharedPtr<FROSBridgeMsg> Msg)
     TSharedPtr<control_msgs::FollowJointTrajectoryActionGoal> TrajectoryMsg = StaticCastSharedPtr<control_msgs::FollowJointTrajectoryActionGoal>(Msg);
 
     TArray<FString> JointNames = TrajectoryMsg->GetGoal().GetTrajectory().GetJointNames();
-    JointController->SetJointNames(JointNames);
+
+    JointController->Reset();
 
     actionlib_msgs::GoalID GoalID = TrajectoryMsg->GetGoalId();
     UE_LOG(LogRFJTAGoalSubscriber, Log, TEXT("%s Received Trajectory Goal ID: %s"), *FROSTime::Now().ToString(), *GoalID.GetId());

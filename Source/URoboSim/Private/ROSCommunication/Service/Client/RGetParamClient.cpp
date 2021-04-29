@@ -12,7 +12,6 @@ void URGetParamClient::SetServiceClientParameters(URServiceClientParameter *&Ser
   if (URGetParamClientParameter *GetParamClientParameter = Cast<URGetParamClientParameter>(ServiceClientParameters))
   {
     Super::SetServiceClientParameters(ServiceClientParameters);
-    ControllerName = GetParamClientParameter->ControllerName;
     GetParamArguments = GetParamClientParameter->GetParamArguments;
   }  
 }
@@ -35,9 +34,8 @@ void URGetParamClient::CallService()
   Handler->CallService(GetParamClient, Request, Response);
 }
 
-FRGetParamClientCallback::FRGetParamClientCallback(const FString &InServiceName, const FString &InServiceType, URController *InController) : FROSBridgeSrvClient(InServiceName, InServiceType)
+FRGetParamClientCallback::FRGetParamClientCallback(const FString &InServiceName, const FString &InServiceType) : FROSBridgeSrvClient(InServiceName, InServiceType)
 {
-  Controller = InController;
 }
 
 void FRGetParamClientCallback::Callback(TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse)

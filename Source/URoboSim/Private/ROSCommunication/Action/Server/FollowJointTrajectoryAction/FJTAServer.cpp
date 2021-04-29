@@ -34,7 +34,14 @@ void URFJTAServer::Init()
   Cast<URFJTAResultPublisher>(ResultPublisher)->FrameId = FrameId;
   Cast<URFJTAStatusPublisher>(StatusPublisher)->FrameId = FrameId;
 
-  Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->JointParamPath = JointParamPath;
-
   Super::Init();
+
+  GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
+  GetJointsClient->GetParamArguments.Name = JointParamPath;
+  GetJointsClient->Connect(Handler);
+  if (URJointController *JointController = Cast<URJointController>(GetOwner()->GetController(ControllerName)))
+  {
+    JointController->bControllAllJoints = false;
+    GetJointsClient->GetJointNames(&JointController->JointNames);
+  }
 }

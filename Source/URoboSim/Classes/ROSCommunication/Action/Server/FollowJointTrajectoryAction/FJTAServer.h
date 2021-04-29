@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ROSCommunication/Action/Server/RActionServer.h"
+#include "ROSCommunication/Service/Client/RGetJointsClient.h"
 // clang-format off
 #include "FJTAServer.generated.h"
 // clang-format on
@@ -47,4 +48,7 @@ public:
 
 protected:
   void Init() override;
+
+private:
+  URGetJointsClient *GetJointsClient;
 };

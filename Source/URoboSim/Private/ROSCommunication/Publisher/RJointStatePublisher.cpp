@@ -4,11 +4,10 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogRJointStatePublisher, Log, All);
 
-static void GenerateMsg(const TMap<FString, FJointState> &JointStates, TArray<FString> &JointNames, TArray<double> &JointPositions, TArray<double> &JointVelocities)
+static void GenerateMsg(const TMap<FString, FJointState> &JointStates, TArray<double> &JointPositions, TArray<double> &JointVelocities)
 {
   for (const TPair<FString, FJointState> &JointState : JointStates)
   {
-    JointNames.Add(JointState.Key);
     JointPositions.Add(JointState.Value.JointPosition);
     JointVelocities.Add(JointState.Value.JointVelocity);
   }
@@ -19,6 +18,7 @@ URJointStatePublisher::URJointStatePublisher()
   Topic = TEXT("/body/joint_states");
   MessageType = TEXT("sensor_msgs/JointState");
   FrameId = TEXT("odom");
+  JointParamPath = TEXT("hardware_interface/joints");
 }
 
 void URJointStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
@@ -27,6 +27,7 @@ void URJointStatePublisher::SetPublishParameters(URPublisherParameter *&Publishe
   {
     Super::SetPublishParameters(PublisherParameters);
     FrameId = JointStatePublisherParameters->FrameId;
+    JointParamPath = JointStatePublisherParameters->JointParamPath;
   }
 }
 
@@ -35,41 +36,39 @@ void URJointStatePublisher::Init()
   Super::Init();
   if (GetOwner())
   {
-    for (const URJoint *Joint : GetOwner()->GetJoints())
-    {
-      JointStates.Add(Joint->GetName());
-    }
+    GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
+    GetJointsClient->GetParamArguments.Name = JointParamPath;
+    GetJointsClient->Connect(Handler);
+    GetJointsClient->GetJointNames(&JointNames);
   }
 }
 
 void URJointStatePublisher::Publish()
 {
-  for (TPair<FString, FJointState> &JointState : JointStates)
+  if (GetOwner())
   {
-    URJoint *Joint = GetOwner()->GetJoint(JointState.Key);
-    if (Joint)
+    TMap<FString, FJointState> JointStates;
+    for (const URJoint *Joint : GetOwner()->GetJoints())
     {
-      JointState.Value = Joint->GetJointStateInROSUnit();
+      if (JointNames.Contains(Joint->GetName()))
+      {
+        JointStates.Add(Joint->GetName(), Joint->GetJointStateInROSUnit());
+      } 
     }
-    else
-    {
-      UE_LOG(LogRJointStatePublisher, Error, TEXT("Joint %s is not in %s"), *JointState.Key, *GetOwner()->GetName())
-    }
+
+    static int Seq = 0;
+    TSharedPtr<sensor_msgs::JointState> JointStateMsg = MakeShareable(new sensor_msgs::JointState());
+    JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), FrameId));
+    JointStateMsg->SetName(JointNames);
+
+    TArray<double> JointPositions;
+    TArray<double> JointVelocities;
+    GenerateMsg(JointStates, JointPositions, JointVelocities);
+    JointStateMsg->SetPosition(JointPositions);
+    JointStateMsg->SetVelocity(JointVelocities);
+
+    Handler->PublishMsg(Topic, JointStateMsg);
+
+    Handler->Process();
   }
-
-  static int Seq = 0;
-  static TSharedPtr<sensor_msgs::JointState> JointStateMsg = MakeShareable(new sensor_msgs::JointState());
-  JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), FrameId));
-
-  TArray<FString> JointNames;
-  TArray<double> JointPositions;
-  TArray<double> JointVelocities;
-  GenerateMsg(JointStates, JointNames, JointPositions, JointVelocities);
-  JointStateMsg->SetName(JointNames);
-  JointStateMsg->SetPosition(JointPositions);
-  JointStateMsg->SetVelocity(JointVelocities);
-
-  Handler->PublishMsg(Topic, JointStateMsg);
-
-  Handler->Process();
 }

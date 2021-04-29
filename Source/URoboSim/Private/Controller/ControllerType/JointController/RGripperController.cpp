@@ -13,9 +13,11 @@ void URGripperController::Init()
   {
     for (const TPair<FString, FGripperInformation> &GripperJoint : GripperJoints)
     {
-      if (GetOwner()->GetJoint(GripperJoint.Key))
+      if (URJoint *Joint = GetOwner()->GetJoint(GripperJoint.Key))
       {
+        JointNames.Add(GripperJoint.Key);
         DesiredJointStates.Add(GripperJoint.Key, FJointState());
+        Joint->SetDrive(EnableDrive);
       } 
     } 
     SetMode();
@@ -55,8 +57,7 @@ void URGripperController::Tick(const float &InDeltaTime)
 
 void URGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)
 {
-  URGripperControllerParameter *GripperControllerParameters = Cast<URGripperControllerParameter>(ControllerParameters);
-  if (GripperControllerParameters)
+  if (URGripperControllerParameter *GripperControllerParameters = Cast<URGripperControllerParameter>(ControllerParameters))
   {
     Super::SetControllerParameters(ControllerParameters);
     GripperJoints = GripperControllerParameters->GripperJoints;

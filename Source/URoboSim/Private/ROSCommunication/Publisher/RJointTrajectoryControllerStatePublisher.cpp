@@ -27,8 +27,7 @@ void URJointTrajectoryControllerStatePublisher::Init()
   Super::Init();
   if (GetOwner())
   {
-    JointController = Cast<URJointController>(GetOwner()->GetController(JointControllerName));
-    if (!JointController)
+    if (!(JointController = Cast<URJointController>(GetOwner()->GetController(JointControllerName))))
     {
       UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointControllerName, *GetName())
     }
@@ -45,25 +44,21 @@ void URJointTrajectoryControllerStatePublisher::Publish()
 
     State->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
 
-    TArray<FString> JointNames;
+    TArray<FString> JointNames = JointController->JointNames;
     TArray<double> DesiredPositions;
     TArray<double> CurrentPositions;
     TArray<double> ErrorPositions;
     TArray<double> DesiredVelocities;
     TArray<double> CurrentVelocities;
     TArray<double> ErrorVelocities;
-    if (JointController->GetTrajectoryStatusArray().Num() > 0)
+    for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
     {
-      for (const FTrajectoryStatus &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
-      {
-        JointNames.Add(TrajectoryStatus.JointName);
-        DesiredPositions.Add(TrajectoryStatus.DesiredState.JointPosition);
-        CurrentPositions.Add(TrajectoryStatus.CurrentState.JointPosition);
-        ErrorPositions.Add(TrajectoryStatus.ErrorState.JointPosition);
-        DesiredVelocities.Add(TrajectoryStatus.DesiredState.JointVelocity);
-        CurrentVelocities.Add(TrajectoryStatus.CurrentState.JointVelocity);
-        ErrorVelocities.Add(TrajectoryStatus.ErrorState.JointVelocity);
-      }
+      DesiredPositions.Add(TrajectoryStatus.Value.DesiredState.JointPosition);
+      CurrentPositions.Add(TrajectoryStatus.Value.CurrentState.JointPosition);
+      ErrorPositions.Add(TrajectoryStatus.Value.ErrorState.JointPosition);
+      DesiredVelocities.Add(TrajectoryStatus.Value.DesiredState.JointVelocity);
+      CurrentVelocities.Add(TrajectoryStatus.Value.CurrentState.JointVelocity);
+      ErrorVelocities.Add(TrajectoryStatus.Value.ErrorState.JointVelocity);
     }
 
     State->SetJointNames(JointNames);

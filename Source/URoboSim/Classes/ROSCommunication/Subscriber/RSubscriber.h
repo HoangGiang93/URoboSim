@@ -35,6 +35,9 @@ public:
   UPROPERTY(EditAnywhere)
   FString Topic;
 
+  UPROPERTY(VisibleAnywhere)
+  FString MessageType;
+
 protected:
   virtual void Init() override;
 
@@ -43,8 +46,5 @@ protected:
   virtual void CreateSubscriber(){}
 
 protected:
-  UPROPERTY(VisibleAnywhere)
-  FString MessageType;
-  
   TSharedPtr<FROSBridgeSubscriber> Subscriber;
 };

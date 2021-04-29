@@ -32,7 +32,7 @@ public:
 
   virtual void CallService(){}
 
-protected:
+public:
   UPROPERTY(EditAnywhere)
   FString ServiceName;
 

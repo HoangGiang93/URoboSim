@@ -8,7 +8,6 @@ URFJTAFeedbackPublisher::URFJTAFeedbackPublisher()
 {
   MessageType = TEXT("control_msgs/FollowJointTrajectoryActionFeedback");
   FrameId = TEXT("odom");
-  JointParamPath = TEXT("whole_body_controller/body/joints");
 }
 
 void URFJTAFeedbackPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
@@ -17,8 +16,7 @@ void URFJTAFeedbackPublisher::SetPublishParameters(URPublisherParameter *&Publis
   {
     Super::SetPublishParameters(PublisherParameters);
     FrameId = FJTAFeedbackPublisherParameters->FrameId;
-    JointParamPath = FJTAFeedbackPublisherParameters->JointParamPath;
-  }  
+  }
 }
 
 void URFJTAFeedbackPublisher::Init()
@@ -27,17 +25,7 @@ void URFJTAFeedbackPublisher::Init()
   if (GetOwner())
   {
     JointController = Cast<URJointController>(Controller);
-    if (JointController)
-    {
-      GetJointsClient = NewObject<URGetJointsClient>();
-      URServiceClientParameter *GetJointsClientParameters = NewObject<URGetJointsClientParameter>();
-      Cast<URGetJointsClientParameter>(GetJointsClientParameters)->GetParamArguments.Name = JointParamPath;
-      Cast<URGetJointsClientParameter>(GetJointsClientParameters)->ControllerName = JointController->GetName();
-      GetJointsClient->SetServiceClientParameters(GetJointsClientParameters);
-      GetJointsClient->SetOwner(GetOwner());
-      GetJointsClient->URServiceClient::Connect(Handler);
-    }
-    else
+    if (!JointController)
     {
       UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("JointController not found in %s"), *GetOwner()->GetName())
     }
@@ -71,15 +59,15 @@ void URFJTAFeedbackPublisher::Publish()
       TArray<double> DesiredVelocities;
       TArray<double> CurrentVelocities;
       TArray<double> ErrorVelocities;
-      for (const FTrajectoryStatus &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
+      for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
       {
-        JointNames.Add(TrajectoryStatus.JointName);
-        DesiredPositions.Add(TrajectoryStatus.DesiredState.JointPosition);
-        CurrentPositions.Add(TrajectoryStatus.CurrentState.JointPosition);
-        ErrorPositions.Add(TrajectoryStatus.ErrorState.JointPosition);
-        DesiredVelocities.Add(TrajectoryStatus.DesiredState.JointVelocity);
-        CurrentVelocities.Add(TrajectoryStatus.CurrentState.JointVelocity);
-        ErrorVelocities.Add(TrajectoryStatus.ErrorState.JointVelocity);
+        JointNames.Add(TrajectoryStatus.Key);
+        DesiredPositions.Add(TrajectoryStatus.Value.DesiredState.JointPosition);
+        CurrentPositions.Add(TrajectoryStatus.Value.CurrentState.JointPosition);
+        ErrorPositions.Add(TrajectoryStatus.Value.ErrorState.JointPosition);
+        DesiredVelocities.Add(TrajectoryStatus.Value.DesiredState.JointVelocity);
+        CurrentVelocities.Add(TrajectoryStatus.Value.CurrentState.JointVelocity);
+        ErrorVelocities.Add(TrajectoryStatus.Value.ErrorState.JointVelocity);
       }
 
       control_msgs::FollowJointTrajectoryFeedback FeedbackMsg;

@@ -3,7 +3,6 @@
 #include "ROSBridgeSrvClient.h"
 #include "RServiceClient.h"
 #include "srv/ConfigureJointStatePublisher.h"
-#include "Controller/RController.h"
 // clang-format off
 #include "RGetParamClient.generated.h"
 // clang-format on
@@ -36,9 +35,6 @@ public:
 public:
   UPROPERTY(EditAnywhere)
   FGetParamArgument GetParamArguments;
-
-  UPROPERTY(EditAnywhere)
-  FString ControllerName;
 };
 
 UCLASS()
@@ -61,18 +57,17 @@ public:
   UPROPERTY(EditAnywhere)
   FGetParamArgument GetParamArguments;
 
-  UPROPERTY(EditAnywhere)
-  FString ControllerName;
-
   TSharedPtr<class FRGetParamClientCallback> GetParamClient;
+
   TSharedPtr<rosapi::GetParam::Request> Request;
+  
   TSharedPtr<rosapi::GetParam::Response> Response;
 };
 
 class FRGetParamClientCallback : public FROSBridgeSrvClient
 {
 public:
-  FRGetParamClientCallback(const FString &InServiceName, const FString &InServiceType, URController *InController);
+  FRGetParamClientCallback(const FString &InServiceName, const FString &InServiceType);
 
   void Callback(TSharedPtr<FROSBridgeSrv::SrvResponse> InResponse) override;
 
@@ -80,7 +75,5 @@ protected:
   virtual void Callback(){}
 
 protected:
-  URController *Controller;
-
   FString ParamString;
 };

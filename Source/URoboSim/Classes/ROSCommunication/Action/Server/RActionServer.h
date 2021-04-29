@@ -52,7 +52,7 @@ public:
   URActionServer(){};
 
 public:
-  void Tick() override;
+  virtual void Tick() override;
 
   virtual void SetActionServerParameters(URActionServerParameter *&ActionServerParameters);
 
@@ -60,13 +60,13 @@ public:
   UPROPERTY(EditAnywhere)
   FString ControllerName;
 
+  UPROPERTY(EditAnywhere)
+  FString ActionName;
+
 protected:
   virtual void Init() override;
 
 protected:
-  UPROPERTY(EditAnywhere)
-  FString ActionName;
-
   UPROPERTY(VisibleAnywhere)
   URActionSubscriber *GoalSubscriber;
 

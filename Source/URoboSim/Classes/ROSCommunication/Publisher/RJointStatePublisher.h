@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RPublisher.h"
+#include "ROSCommunication/Service/Client/RGetJointsClient.h"
 // clang-format off
 #include "RJointStatePublisher.generated.h"
 // clang-format on
@@ -13,14 +14,18 @@ class UROBOSIM_API URJointStatePublisherParameter : public URPublisherParameter
 public:
   URJointStatePublisherParameter()
   {
-    Topic = TEXT("/body/joint_states");
+    Topic = TEXT("body/joint_states");
     MessageType = TEXT("sensor_msgs/JointState");
     FrameId = TEXT("odom");
+    JointParamPath = TEXT("hardware_interface/joints");
   }
 
 public:
   UPROPERTY(EditAnywhere)
   FString FrameId; 
+
+  UPROPERTY(EditAnywhere)
+  FString JointParamPath; 
 };
 
 UCLASS()
@@ -40,9 +45,14 @@ protected:
   void Init() override;
 
 public:
-  TMap<FString, FJointState> JointStates;
-
-private:
   UPROPERTY(EditAnywhere)
   FString FrameId; 
+
+  UPROPERTY(EditAnywhere)
+  FString JointParamPath; 
+
+private:
+  URGetJointsClient *GetJointsClient;
+
+  TArray<FString> JointNames;
 };

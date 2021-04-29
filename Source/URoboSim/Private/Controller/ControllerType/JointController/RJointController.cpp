@@ -14,25 +14,6 @@ URJointController::URJointController()
   EnableDrive.MaxForce = 1E10;
 }
 
-void URJointController::SetJointNames(const TArray<FString> &InNames)
-{
-  TrajectoryStatusArray.Empty();
-  for (const FString &InName : InNames)
-  {
-    TrajectoryStatusArray.Add(FTrajectoryStatus(InName));
-    if (!bControllAllJoints)
-    {
-      if (!DesiredJointStates.Contains(InName))
-      {
-        DesiredJointStates.Add(InName, FJointState());
-      }
-    }
-  }
-  TrajectoryPointIndex = 0;
-  DesiredTrajectory.Empty();
-  SetMode();
-}
-
 void URJointController::SetControllerParameters(URControllerParameter *&ControllerParameters)
 {
   URJointControllerParameter *JointControllerParameters = Cast<URJointControllerParameter>(ControllerParameters);
@@ -43,6 +24,34 @@ void URJointController::SetControllerParameters(URControllerParameter *&Controll
     bDisableCollision = JointControllerParameters->bDisableCollision;
     bControllAllJoints = JointControllerParameters->bControllAllJoints;
   }
+}
+
+void URJointController::SetJointNames()
+{
+  for (const FString &JointName : JointNames)
+  {
+    if (!bControllAllJoints)
+    {
+      if (!DesiredJointStates.Contains(JointName))
+      {
+        DesiredJointStates.Add(JointName);
+        GetOwner()->GetJoint(JointName)->SetDrive(EnableDrive);
+      }
+    }
+  }
+}
+
+void URJointController::Reset()
+{
+  SetJointNames();
+  TrajectoryStatusArray.Empty();
+  for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
+  {
+    TrajectoryStatusArray.Add(DesiredJointState.Key);
+  }
+
+  TrajectoryPointIndex = 0;
+  DesiredTrajectory.Empty();
 }
 
 void URJointController::Init()
@@ -57,9 +66,11 @@ void URJointController::Init()
     {
       for (URJoint *&Joint : GetOwner()->GetJoints())
       {
-        DesiredJointStates.Add(Joint->GetName(), FJointState());
+        JointNames.Add(Joint->GetName());
+        DesiredJointStates.Add(Joint->GetName());
+        Joint->SetDrive(EnableDrive);
       }
-    } 
+    }
     SetMode();
   }
   else
@@ -104,13 +115,6 @@ void URJointController::SetMode()
       }
       break;
     }
-    for (URJoint *&Joint : GetOwner()->GetJoints())
-    {
-      if (DesiredJointStates.Contains(Joint->GetName()))
-      {
-        Joint->SetDrive(EnableDrive);
-      }
-    }
   }
   else
   {
@@ -154,26 +158,35 @@ void URJointController::SetJointState()
 {
   switch (Mode)
   {
-    case UJointControllerMode::Dynamic:
-      for (URJoint *&Joint : GetOwner()->GetJoints())
+  case UJointControllerMode::Dynamic:
+    for (const FString &JointName : JointNames)
+    {
+      if (URJoint *Joint = GetOwner()->GetJoint(JointName))
       {
-        if (DesiredJointStates.Contains(Joint->GetName()))
+        if (!DesiredJointStates.Contains(JointName))
         {
-          Joint->SetTargetPosition(DesiredJointStates[Joint->GetName()].JointPosition);
-          Joint->SetTargetVelocity(DesiredJointStates[Joint->GetName()].JointVelocity);
+          DesiredJointStates.Add(JointName);
+          Joint->SetDrive(EnableDrive);
         }
+        Joint->SetTargetPosition(DesiredJointStates[JointName].JointPosition);
+        Joint->SetTargetVelocity(DesiredJointStates[JointName].JointVelocity);
       }
-      break;
+    }
+    break;
 
-    case UJointControllerMode::Kinematic:
-      for (URJoint *&Joint : GetOwner()->GetJoints())
+  case UJointControllerMode::Kinematic:
+    for (const FString &JointName : JointNames)
+    {
+      if (DesiredJointStates.Contains(JointName))
       {
-        if (DesiredJointStates.Contains(Joint->GetName()))
+        if (URJoint *Joint = GetOwner()->GetJoint(JointName))
         {
-          Joint->SetPosition(DesiredJointStates[Joint->GetName()].JointPosition);
+          FJointState TargetJointState = DesiredJointStates.FindOrAdd(JointName);
+          Joint->SetPosition(TargetJointState.JointPosition);
         }
       }
-      break;
+    }
+    break;
   }
 }
 
@@ -185,19 +198,22 @@ bool URJointController::CheckTrajectoryPoint()
     TrajectoryPointIndex++;
   }
 
-  for (FTrajectoryStatus &TrajectoryStatus : TrajectoryStatusArray)
+  for (TPair<FString, FTrajectoryStatus> &TrajectoryStatus : TrajectoryStatusArray)
   {
-    URJoint *Joint = GetOwner()->GetJoint(TrajectoryStatus.JointName);
-    if (Joint)
+    const FString JointName = TrajectoryStatus.Key;
+    if (URJoint *Joint = GetOwner()->GetJoint(JointName))
     {
-      TrajectoryStatus.CurrentState = Joint->GetJointStateInROSUnit();
-      TrajectoryStatus.DesiredState = DesiredTrajectory[TrajectoryPointIndex].JointStates[TrajectoryStatus.JointName];
-      TrajectoryStatus.ErrorState.JointPosition = TrajectoryStatus.DesiredState.JointPosition - TrajectoryStatus.CurrentState.JointPosition;
-      TrajectoryStatus.ErrorState.JointVelocity = TrajectoryStatus.DesiredState.JointVelocity - TrajectoryStatus.CurrentState.JointVelocity;
+      TrajectoryStatus.Value.CurrentState = Joint->GetJointStateInROSUnit();
+      if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName))
+      {
+        TrajectoryStatus.Value.DesiredState = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName];
+        TrajectoryStatus.Value.ErrorState.JointPosition = TrajectoryStatus.Value.DesiredState.JointPosition - TrajectoryStatus.Value.CurrentState.JointPosition;
+        TrajectoryStatus.Value.ErrorState.JointVelocity = TrajectoryStatus.Value.DesiredState.JointVelocity - TrajectoryStatus.Value.CurrentState.JointVelocity;
+      }
     }
     else
     {
-      UE_LOG(LogRJointController, Error, TEXT("%s of DesiredTrajectory is not contained in %s"), *TrajectoryStatus.JointName, *GetOwner()->GetName());
+      UE_LOG(LogRJointController, Error, TEXT("%s of DesiredTrajectory is not contained in %s"), *JointName, *GetOwner()->GetName());
     }
   }
 
@@ -235,24 +251,27 @@ void URJointController::SetDesiredJointState()
     {
       CurrentTimeStep = NextTimeStep;
     }
-    
-    for (FTrajectoryStatus &TrajectoryStatus : TrajectoryStatusArray)
+
+    for (TPair<FString, FTrajectoryStatus> &TrajectoryStatus : TrajectoryStatusArray)
     {
-      FString JointName = TrajectoryStatus.JointName;
-      float DiffJointPosition = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointPosition - LastTrajectoryPoints.JointStates[JointName].JointPosition;
-      float DesiredJointPosition = DiffJointPosition / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointPosition; 
-      float DiffJointVelocity = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointVelocity - LastTrajectoryPoints.JointStates[JointName].JointVelocity;
-      float DesiredJointVelocity = DiffJointVelocity / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointVelocity; 
-      
-      if (GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("revolute") || GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("continuous"))
+      const FString JointName = TrajectoryStatus.Key;
+      if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName) && LastTrajectoryPoints.JointStates.Contains(JointName) && DesiredJointStates.Contains(JointName))
       {
-        DesiredJointStates[JointName].JointPosition = FMath::RadiansToDegrees(DesiredJointPosition);
-        DesiredJointStates[JointName].JointVelocity = FMath::RadiansToDegrees(DesiredJointVelocity);
-      }
-      else if (GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("prismatic"))
-      {
-        DesiredJointStates[JointName].JointPosition = FConversions::MToCm((float)DesiredJointPosition);
-        DesiredJointStates[JointName].JointVelocity = FConversions::MToCm((float)DesiredJointVelocity);
+        float DiffJointPosition = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointPosition - LastTrajectoryPoints.JointStates[JointName].JointPosition;
+        float DesiredJointPosition = DiffJointPosition / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointPosition;
+        float DiffJointVelocity = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointVelocity - LastTrajectoryPoints.JointStates[JointName].JointVelocity;
+        float DesiredJointVelocity = DiffJointVelocity / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointVelocity;
+
+        if (GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("revolute") || GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("continuous"))
+        {
+          DesiredJointStates[JointName].JointPosition = FMath::RadiansToDegrees(DesiredJointPosition);
+          DesiredJointStates[JointName].JointVelocity = FMath::RadiansToDegrees(DesiredJointVelocity);
+        }
+        else if (GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("prismatic"))
+        {
+          DesiredJointStates[JointName].JointPosition = FConversions::MToCm((float)DesiredJointPosition);
+          DesiredJointStates[JointName].JointVelocity = FConversions::MToCm((float)DesiredJointVelocity);
+        }
       }
     }
   }
@@ -279,13 +298,11 @@ void URJointController::FollowJointTrajectory()
 {
   TrajectoryPointIndex = 0;
   LastTrajectoryPoints.Reset();
-  URJoint *Joint = nullptr;
-  for (const FTrajectoryStatus &TrajectoryStatus : TrajectoryStatusArray)
+  for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : TrajectoryStatusArray)
   {
-    Joint = GetOwner()->GetJoint(TrajectoryStatus.JointName);
-    if (Joint)
+    if (URJoint *Joint = GetOwner()->GetJoint(TrajectoryStatus.Key))
     {
-      LastTrajectoryPoints.JointStates.Add(TrajectoryStatus.JointName, Joint->GetJointStateInROSUnit());
+      LastTrajectoryPoints.JointStates.Add(TrajectoryStatus.Key, Joint->GetJointStateInROSUnit());
     }
   }
   ActionStartTime = GetOwner()->GetGameTimeSinceCreation();

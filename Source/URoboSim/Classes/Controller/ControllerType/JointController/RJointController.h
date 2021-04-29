@@ -20,11 +20,8 @@ enum class UJointControllerState : uint8
   Off
 };
 
-USTRUCT()
 struct FTrajectoryPoints
 {
-  GENERATED_BODY()
-
 public:
   FTrajectoryPoints() {}
 
@@ -37,22 +34,17 @@ public:
     }
   }
 
-  float StartTime;
-  float Secs;
-  float NSecs;
-  TMap<FString, FJointState> JointStates;
-
 public:
   void SetTimeStep(const float &InSecs, const float &InNSecs)
   {
     Secs = InSecs;
     NSecs = InNSecs;
-  };
+  }
 
   const float GetTimeAsFloat() const
   {
     return Secs + NSecs / 1000000000;
-  };
+  }
 
   void Reset()
   {
@@ -60,22 +52,25 @@ public:
     Secs = 0;
     NSecs = 0;
     JointStates.Empty();
-  };
-};
-
-USTRUCT()
-struct FTrajectoryStatus
-{
-  GENERATED_BODY()
+  }
 
 public:
-  FTrajectoryStatus() {}
+  float StartTime;
 
-  FTrajectoryStatus(const FString &InJointName) : JointName(InJointName), CurrentState(FJointState()), DesiredState(FJointState()), ErrorState(FJointState()) {}
+  float Secs;
 
-  FString JointName;
+  float NSecs;
+
+  TMap<FString, FJointState> JointStates;
+};
+
+struct FTrajectoryStatus
+{
+public:
   FJointState CurrentState;
+
   FJointState DesiredState;
+
   FJointState ErrorState;
 };
 
@@ -114,11 +109,9 @@ public:
   virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) override;
 
 public:
-  void SetJointNames(const TArray<FString> &InNames);
+  void Reset();
 
-  void SetMode();
-
-  const TArray<FTrajectoryStatus> GetTrajectoryStatusArray() const { return TrajectoryStatusArray; }
+  const TMap<FString, FTrajectoryStatus> GetTrajectoryStatusArray() const { return TrajectoryStatusArray; }
 
   void FollowJointTrajectory();
 
@@ -140,11 +133,13 @@ public:
 
   TArray<FTrajectoryPoints> DesiredTrajectory;
 
+  TArray<FString> JointNames;
+
 protected:
   UPROPERTY(EditAnywhere)
   UJointControllerMode Mode;
 
-  TArray<FTrajectoryStatus> TrajectoryStatusArray;
+  TMap<FString, FTrajectoryStatus> TrajectoryStatusArray;
 
   uint32 TrajectoryPointIndex;
 
@@ -153,7 +148,11 @@ protected:
   float ActionDuration;
 
 protected:
+  void SetMode();
+
   void SetJointState();
+
+  void SetJointNames();
 
   bool CheckTrajectoryPoint();
 

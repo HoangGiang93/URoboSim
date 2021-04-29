@@ -38,8 +38,7 @@ void URFingerGripperController::Tick(const float &InDeltaTime)
 
 void URFingerGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)
 {
-  URFingerGripperControllerParameter *FingerGripperControllerParameters = Cast<URFingerGripperControllerParameter>(ControllerParameters);
-  if (FingerGripperControllerParameters)
+  if (URFingerGripperControllerParameter *FingerGripperControllerParameters = Cast<URFingerGripperControllerParameter>(ControllerParameters))
   {
     Super::SetControllerParameters(ControllerParameters);
     GripperHitDistance = FingerGripperControllerParameters->GripperHitDistance;

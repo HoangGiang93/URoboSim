@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Controller/ControllerType/JointController/RJointController.h"
 #include "ROSCommunication/Service/Client/RGetParamClient.h"
 // clang-format off
 #include "RGetJointsClient.generated.h"
@@ -15,7 +14,6 @@ public:
   URGetJointsClientParameter()
   {
     GetParamArguments.Name = TEXT("/hardware_interface/joints");
-    ControllerName = TEXT("JointController");
   }
 };
 
@@ -27,18 +25,18 @@ class UROBOSIM_API URGetJointsClient final : public URGetParamClient
 public:
   URGetJointsClient();
 
-protected:
-  void Init() override;
+public:
+  void GetJointNames(TArray<FString> *JointNames);
 };
 
 class FRGetJointsClientCallback final : public FRGetParamClientCallback
 {
 public:
-  FRGetJointsClientCallback(const FString &InServiceName, const FString &InServiceType, URController *InController);
+  FRGetJointsClientCallback(const FString &InServiceName, const FString &InServiceType, TArray<FString> *InJointNamesPtr);
 
 protected:
   void Callback() override;
 
 private:
-  URJointController *JointController;
+  TArray<FString> *JointNamesPtr;
 };

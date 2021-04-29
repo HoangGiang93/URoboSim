@@ -2,7 +2,6 @@
 
 #include "Controller/ControllerType/JointController/RJointController.h"
 #include "ROSCommunication/Action/Server/RActionServer.h"
-#include "ROSCommunication/Service/Client/RGetJointsClient.h"
 // clang-format off
 #include "FJTAFeedbackPublisher.generated.h"
 // clang-format on
@@ -17,7 +16,6 @@ public:
   {
     MessageType = TEXT("control_msgs/FollowJointTrajectoryActionFeedback");
     FrameId = TEXT("odom");
-    JointParamPath = TEXT("/whole_body_controller/body/joints");
   }
 
 public:
@@ -48,11 +46,6 @@ public:
   UPROPERTY(EditAnywhere)
   FString FrameId; 
 
-  UPROPERTY(EditAnywhere)
-  FString JointParamPath; 
-
 private:
   URJointController *JointController;
-
-  URGetJointsClient *GetJointsClient;
 };

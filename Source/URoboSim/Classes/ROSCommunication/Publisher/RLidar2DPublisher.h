@@ -44,15 +44,16 @@ public:
 protected:
   void Init() override;
 
-private:
-  void SetLidar();
-
-private:
+public:
   UPROPERTY(EditAnywhere)
   FString LidarReferenceROSLinkName;
 
   UPROPERTY(EditAnywhere)
   FString LidarName;
 
+private:
+  void SetLidar();
+
+private:
   URLidar2D *Lidar;
 };
