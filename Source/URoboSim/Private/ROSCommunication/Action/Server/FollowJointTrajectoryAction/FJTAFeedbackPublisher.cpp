@@ -1,5 +1,4 @@
 #include "ROSCommunication/Action/Server/FollowJointTrajectoryAction/FJTAFeedbackPublisher.h"
-#include "Controller/RControllerComponent.h"
 #include "control_msgs/FollowJointTrajectoryActionFeedback.h"
 #include "trajectory_msgs/JointTrajectoryPoint.h"
 
@@ -10,6 +9,16 @@ URFJTAFeedbackPublisher::URFJTAFeedbackPublisher()
   MessageType = TEXT("control_msgs/FollowJointTrajectoryActionFeedback");
   FrameId = TEXT("odom");
   JointParamPath = TEXT("whole_body_controller/body/joints");
+}
+
+void URFJTAFeedbackPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
+{
+  if (URFJTAFeedbackPublisherParameter *FJTAFeedbackPublisherParameters = Cast<URFJTAFeedbackPublisherParameter>(PublisherParameters))
+  {
+    Super::SetPublishParameters(PublisherParameters);
+    FrameId = FJTAFeedbackPublisherParameters->FrameId;
+    JointParamPath = FJTAFeedbackPublisherParameters->JointParamPath;
+  }  
 }
 
 void URFJTAFeedbackPublisher::Init()
@@ -37,17 +46,6 @@ void URFJTAFeedbackPublisher::Init()
   {
     UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("Owner not found in %s, Outer is %s"), *GetName(), *GetOuter()->GetName())
   }
-}
-
-void URFJTAFeedbackPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  URFJTAFeedbackPublisherParameter *FJTAFeedbackPublisherParameters = Cast<URFJTAFeedbackPublisherParameter>(PublisherParameters);
-  if (FJTAFeedbackPublisherParameters)
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    FrameId = FJTAFeedbackPublisherParameters->FrameId;
-    JointParamPath = FJTAFeedbackPublisherParameters->JointParamPath;
-  }  
 }
 
 void URFJTAFeedbackPublisher::Publish()

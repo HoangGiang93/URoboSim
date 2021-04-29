@@ -26,7 +26,7 @@ class UROBOSIM_API URFJTAGoalSubscriber final : public URActionSubscriber
 public:
   URFJTAGoalSubscriber();
 
-public:
+protected:
   void CreateSubscriber() override;
 };
 

@@ -21,6 +21,15 @@ URJointStatePublisher::URJointStatePublisher()
   FrameId = TEXT("odom");
 }
 
+void URJointStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
+{
+  if (URJointStatePublisherParameter *JointStatePublisherParameters = Cast<URJointStatePublisherParameter>(PublisherParameters))
+  {
+    Super::SetPublishParameters(PublisherParameters);
+    FrameId = JointStatePublisherParameters->FrameId;
+  }
+}
+
 void URJointStatePublisher::Init()
 {
   Super::Init();
@@ -30,16 +39,6 @@ void URJointStatePublisher::Init()
     {
       JointStates.Add(Joint->GetName());
     }
-  }
-}
-
-void URJointStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  URJointStatePublisherParameter *JointStatePublisherParameters = Cast<URJointStatePublisherParameter>(PublisherParameters);
-  if (JointStatePublisherParameters)
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    FrameId = JointStatePublisherParameters->FrameId;
   }
 }
 

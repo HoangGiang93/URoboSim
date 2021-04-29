@@ -3,6 +3,15 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogRPublisher, Log, All)
 
+void URPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
+{
+  if (PublisherParameters)
+  {
+    Topic = PublisherParameters->Topic;
+    MessageType = PublisherParameters->MessageType;
+  }
+}
+
 void URPublisher::Init()
 {
   Super::Init();
@@ -23,14 +32,5 @@ void URPublisher::CreatePublisher()
   if (Publisher.IsValid())
   {
     Handler->AddPublisher(Publisher);
-  }
-}
-
-void URPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  if (PublisherParameters)
-  {
-    Topic = PublisherParameters->Topic;
-    MessageType = PublisherParameters->MessageType;
   }
 }

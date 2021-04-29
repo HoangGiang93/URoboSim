@@ -11,23 +11,22 @@ URLidar2DPublisher::URLidar2DPublisher()
   LidarName = TEXT("Laser");
 }
 
+void URLidar2DPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
+{
+  if (URLidar2DPublisherParameter *LidarPublisherParameters = Cast<URLidar2DPublisherParameter>(PublisherParameters))
+  {
+    Super::SetPublishParameters(PublisherParameters);
+    LidarReferenceROSLinkName = LidarPublisherParameters->LidarReferenceROSLinkName;
+    LidarName = LidarPublisherParameters->LidarName;
+    SetLidar();
+  }
+}
+
 void URLidar2DPublisher::Init()
 {
   Super::Init();
   if (!Lidar)
   {
-    SetLidar();
-  }
-}
-
-void URLidar2DPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  URLidar2DPublisherParameter *LidarPublisherParameters = Cast<URLidar2DPublisherParameter>(PublisherParameters);
-  if (LidarPublisherParameters)
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    LidarReferenceROSLinkName = LidarPublisherParameters->LidarReferenceROSLinkName;
-    LidarName = LidarPublisherParameters->LidarName;
     SetLidar();
   }
 }

@@ -1,6 +1,5 @@
 #include "ROSCommunication/Service/Client/RGetJointsClient.h"
 #include "TimerManager.h"
-#include "Controller/ControllerType/JointController/RJointController.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRGetJointsClient, Log, All);
 
@@ -25,26 +24,23 @@ void URGetJointsClient::Init()
 
 FRGetJointsClientCallback::FRGetJointsClientCallback(const FString &InServiceName, const FString &InServiceType, URController *InController) : FRGetParamClientCallback::FRGetParamClientCallback(InServiceName, InServiceType, InController)
 {
+  JointController = Cast<URJointController>(Controller);
 }
 
 void FRGetJointsClientCallback::Callback()
 {
-  ParamString.RemoveFromStart(TEXT("["));
-  ParamString.RemoveFromEnd(TEXT("]"));
-  
-  UE_LOG(LogRGetJointsClient, Log, TEXT("ParamString: %s"), *ParamString)
-  TArray<FString> JointsStringArray;
-  ParamString.ParseIntoArray(JointsStringArray, TEXT(","), true);
-  for (FString &JointsString : JointsStringArray)
-  {
-    JointsString = JointsString.TrimStartAndEnd().TrimQuotes();
-  }
-
-  static URJointController *JointController;
-  JointController = Cast<URJointController>(Controller);
-
   if (JointController)
   {
+    ParamString.RemoveFromStart(TEXT("["));
+    ParamString.RemoveFromEnd(TEXT("]"));
+
+    UE_LOG(LogRGetJointsClient, Log, TEXT("ParamString: %s"), *ParamString)
+    TArray<FString> JointsStringArray;
+    ParamString.ParseIntoArray(JointsStringArray, TEXT(","), true);
+    for (FString &JointsString : JointsStringArray)
+    {
+      JointsString = JointsString.TrimStartAndEnd().TrimQuotes();
+    }
     JointController->SetJointNames(JointsStringArray);
   }
   else

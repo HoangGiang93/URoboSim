@@ -14,22 +14,21 @@ UROdomPublisher::UROdomPublisher()
   FrameNames.Add(TEXT("odom_z_joint"));
 }
 
-void UROdomPublisher::Init()
-{
-  Super::Init();
-  OdomPosition.Init(0., FrameNames.Num());
-  OdomVelocity.Init(0., FrameNames.Num());
-}
-
 void UROdomPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  UROdomPublisherParameter *OdomPublisherParameters = Cast<UROdomPublisherParameter>(PublisherParameters);
-  if (OdomPublisherParameters)
+  if (UROdomPublisherParameter *OdomPublisherParameters = Cast<UROdomPublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
     FrameId = OdomPublisherParameters->FrameId;
     FrameNames = OdomPublisherParameters->FrameNames;
   }
+}
+
+void UROdomPublisher::Init()
+{
+  Super::Init();
+  OdomPosition.Init(0., FrameNames.Num());
+  OdomVelocity.Init(0., FrameNames.Num());
 }
 
 void UROdomPublisher::Publish()

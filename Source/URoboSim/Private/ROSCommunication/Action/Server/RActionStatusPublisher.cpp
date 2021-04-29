@@ -11,8 +11,7 @@ URActionStatusPublisher::URActionStatusPublisher()
 
 void URActionStatusPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  URActionStatusPublisherParameter *ActionStatusPublisherParameters = Cast<URActionStatusPublisherParameter>(PublisherParameters);
-  if (ActionStatusPublisherParameters)
+  if (URActionStatusPublisherParameter *ActionStatusPublisherParameters = Cast<URActionStatusPublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
     MessageType = ActionStatusPublisherParameters->MessageType;

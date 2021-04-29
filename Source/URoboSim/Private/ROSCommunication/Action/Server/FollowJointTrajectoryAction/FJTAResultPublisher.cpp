@@ -10,20 +10,19 @@ URFJTAResultPublisher::URFJTAResultPublisher()
   FrameId = TEXT("odom");
 }
 
-void URFJTAResultPublisher::Init()
-{
-  Super::Init();
-  JointController = Cast<URJointController>(Controller);
-}
-
 void URFJTAResultPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  URFJTAResultPublisherParameter *FJTAResultPublisherParameters = Cast<URFJTAResultPublisherParameter>(PublisherParameters);
-  if (FJTAResultPublisherParameters)
+  if (URFJTAResultPublisherParameter *FJTAResultPublisherParameters = Cast<URFJTAResultPublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
     FrameId = FJTAResultPublisherParameters->FrameId;
   }  
+}
+
+void URFJTAResultPublisher::Init()
+{
+  Super::Init();
+  JointController = Cast<URJointController>(Controller);
 }
 
 void URFJTAResultPublisher::Publish()

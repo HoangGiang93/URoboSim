@@ -9,10 +9,9 @@ URGetParamClient::URGetParamClient()
 
 void URGetParamClient::SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters)
 {
-  Super::SetServiceClientParameters(ServiceClientParameters);
-  URGetParamClientParameter *GetParamClientParameter = Cast<URGetParamClientParameter>(ServiceClientParameters);
-  if (GetParamClientParameter)
+  if (URGetParamClientParameter *GetParamClientParameter = Cast<URGetParamClientParameter>(ServiceClientParameters))
   {
+    Super::SetServiceClientParameters(ServiceClientParameters);
     ControllerName = GetParamClientParameter->ControllerName;
     GetParamArguments = GetParamClientParameter->GetParamArguments;
   }  

@@ -1,22 +1,22 @@
 #include "ROSCommunication/Action/Server/RActionServer.h"
-#include "ROSCommunication/RROSCommunicationComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogRActionServer, Log, All)
 
+void URActionServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
+{
+  if (ActionServerParameters)
+  {
+    ActionName = ActionServerParameters->ActionName;
+    ControllerName = ActionServerParameters->ControllerName;
+  }
+}
+
 void URActionServer::Init()
 {
-  ARModel *Owner = nullptr;
-  if (Cast<ARModel>(GetOuter()))
+  Super::Init();
+  if (GetOwner())
   {
-    Owner = Cast<ARModel>(GetOuter());
-  }
-  else if (Cast<URROSCommunicationComponent>(GetOuter()) && Cast<ARModel>(Cast<URROSCommunicationComponent>(GetOuter())->GetOwner()))
-  {
-    Owner = Cast<ARModel>(Cast<URROSCommunicationComponent>(GetOuter())->GetOwner());
-  }
-  if (Owner)
-  {
-    URController *Controller = Owner->GetController(ControllerName);
+    URController *Controller = GetOwner()->GetController(ControllerName);
     if (!Controller)
     {
       UE_LOG(LogRActionServer, Error, TEXT("%s not found in %s"), *ControllerName, *GetName())
@@ -27,7 +27,7 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *GoalSubscriber->GetName(), *GetName())
       GoalSubscriber->SetController(Controller);
-      GoalSubscriber->SetOwner(Owner);
+      GoalSubscriber->SetOwner(GetOwner());
       GoalSubscriber->Topic = ActionName + TEXT("/goal");
       GoalSubscriber->Connect(Handler);
     }
@@ -35,7 +35,7 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *CancelSubscriber->GetName(), *GetName())
       CancelSubscriber->SetController(Controller);
-      CancelSubscriber->SetOwner(Owner);
+      CancelSubscriber->SetOwner(GetOwner());
       CancelSubscriber->Topic = ActionName + TEXT("/cancel");
       CancelSubscriber->Connect(Handler);
     }
@@ -43,7 +43,7 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *StatusPublisher->GetName(), *GetName())
       StatusPublisher->SetController(Controller);
-      StatusPublisher->SetOwner(Owner);
+      StatusPublisher->SetOwner(GetOwner());
       StatusPublisher->Topic = ActionName + TEXT("/status");
       StatusPublisher->Connect(Handler);
     }
@@ -51,7 +51,7 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *FeedbackPublisher->GetName(), *GetName())
       FeedbackPublisher->SetController(Controller);
-      FeedbackPublisher->SetOwner(Owner);
+      FeedbackPublisher->SetOwner(GetOwner());
       FeedbackPublisher->Topic = ActionName + TEXT("/feedback");
       FeedbackPublisher->Connect(Handler);
     }
@@ -59,7 +59,7 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *ResultPublisher->GetName(), *GetName())
       ResultPublisher->SetController(Controller);
-      ResultPublisher->SetOwner(Owner);
+      ResultPublisher->SetOwner(GetOwner());
       ResultPublisher->Topic = ActionName + TEXT("/result");
       ResultPublisher->Connect(Handler);
     }
@@ -87,14 +87,5 @@ void URActionServer::Tick()
   if (ResultPublisher)
   {
     ResultPublisher->Publish();
-  }
-}
-
-void URActionServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
-{
-  if (ActionServerParameters)
-  {
-    ActionName = ActionServerParameters->ActionName;
-    ControllerName = ActionServerParameters->ControllerName;
   }
 }

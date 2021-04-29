@@ -12,6 +12,16 @@ URJointTrajectoryControllerStatePublisher::URJointTrajectoryControllerStatePubli
   JointControllerName = TEXT("JointController");
 }
 
+void URJointTrajectoryControllerStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
+{
+  if (URJointTrajectoryControllerStatePublisherParameter *JointTrajectoryControllerStatePublisherParameters = Cast<URJointTrajectoryControllerStatePublisherParameter>(PublisherParameters))
+  {
+    Super::SetPublishParameters(PublisherParameters);
+    FrameId = JointTrajectoryControllerStatePublisherParameters->FrameId;
+    JointControllerName = JointTrajectoryControllerStatePublisherParameters->JointControllerName;
+  }
+}
+
 void URJointTrajectoryControllerStatePublisher::Init()
 {
   Super::Init();
@@ -22,17 +32,6 @@ void URJointTrajectoryControllerStatePublisher::Init()
     {
       UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointControllerName, *GetName())
     }
-  }
-}
-
-void URJointTrajectoryControllerStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  URJointTrajectoryControllerStatePublisherParameter *JointTrajectoryControllerStatePublisherParameters = Cast<URJointTrajectoryControllerStatePublisherParameter>(PublisherParameters);
-  if (JointTrajectoryControllerStatePublisherParameters)
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    FrameId = JointTrajectoryControllerStatePublisherParameters->FrameId;
-    JointControllerName = JointTrajectoryControllerStatePublisherParameters->JointControllerName;
   }
 }
 

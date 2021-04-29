@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controller/RControllerComponent.h"
+#include "Controller/RController.h"
 #include "ROSCommunication/Publisher/RPublisher.h"
 #include "ROSCommunication/Subscriber/RSubscriber.h"
 // clang-format off

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Controller/ControllerType/JointController/RJointController.h"
 #include "ROSCommunication/Service/Client/RGetParamClient.h"
 // clang-format off
 #include "RGetJointsClient.generated.h"
@@ -37,4 +38,7 @@ public:
 
 protected:
   void Callback() override;
+
+private:
+  URJointController *JointController;
 };

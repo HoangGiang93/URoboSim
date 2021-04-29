@@ -13,10 +13,10 @@ URVelocityCommandSubscriber::URVelocityCommandSubscriber()
 
 void URVelocityCommandSubscriber::SetSubscriberParameters(URSubscriberParameter *&SubscriberParameters)
 {
-  Super::SetSubscriberParameters(SubscriberParameters);
   URVelocityCommandSubscriberParameter *VelocityCommandSubscriberParameters = Cast<URVelocityCommandSubscriberParameter>(SubscriberParameters);
   if (VelocityCommandSubscriberParameters)
   {
+    Super::SetSubscriberParameters(SubscriberParameters);
     BaseControllerName = VelocityCommandSubscriberParameters->BaseControllerName;
   }  
 }

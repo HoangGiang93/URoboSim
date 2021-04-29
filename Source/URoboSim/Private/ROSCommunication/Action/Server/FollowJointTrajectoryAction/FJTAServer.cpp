@@ -18,6 +18,16 @@ URFJTAServer::URFJTAServer()
   FeedbackPublisher = CreateDefaultSubobject<URFJTAFeedbackPublisher>(TEXT("FJTAFeedbackPublisher"));
 }
 
+void URFJTAServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
+{
+  if (URFJTAServerParameter *FJTAServerParameter = Cast<URFJTAServerParameter>(ActionServerParameters))
+  {
+    Super::SetActionServerParameters(ActionServerParameters);
+    FrameId = FJTAServerParameter->FrameId;
+    JointParamPath = FJTAServerParameter->JointParamPath;
+  }
+}
+
 void URFJTAServer::Init()
 {
   Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FrameId = FrameId;
@@ -27,15 +37,4 @@ void URFJTAServer::Init()
   Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->JointParamPath = JointParamPath;
 
   Super::Init();
-}
-
-void URFJTAServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
-{
-  URFJTAServerParameter *FJTAServerParameter = Cast<URFJTAServerParameter>(ActionServerParameters);
-  if (FJTAServerParameter)
-  {
-    Super::SetActionServerParameters(ActionServerParameters);
-    FrameId = FJTAServerParameter->FrameId;
-    JointParamPath = FJTAServerParameter->JointParamPath;
-  }
 }

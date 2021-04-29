@@ -34,9 +34,10 @@ public:
   URVelocityCommandSubscriber();
 
 public:
-  void CreateSubscriber() override;
-
   void SetSubscriberParameters(URSubscriberParameter *&SubscriberParameters) override;
+
+protected:
+  void CreateSubscriber() override;
 
 public:
   UPROPERTY(EditAnywhere)

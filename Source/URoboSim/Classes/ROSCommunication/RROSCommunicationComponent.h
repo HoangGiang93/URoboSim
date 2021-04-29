@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "ROSCommunication/RROSCommunication.h"
+#include "RROSCommunication.h"
 #include "RPluginComponent.h"
 // clang-format off
 #include "RROSCommunicationComponent.generated.h"

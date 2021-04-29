@@ -50,13 +50,12 @@ public:
   URGetParamClient();
 
 public:
+  virtual void SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters) override;
+
   void CallService() override;
 
 protected:
   virtual void Init() override;
-
-public:
-  virtual void SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters) override;
 
 public:
   UPROPERTY(EditAnywhere)
