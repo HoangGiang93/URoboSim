@@ -10,24 +10,15 @@ URFJTAResultPublisher::URFJTAResultPublisher()
   FrameId = TEXT("odom");
 }
 
-void URFJTAResultPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  if (URFJTAResultPublisherParameter *FJTAResultPublisherParameters = Cast<URFJTAResultPublisherParameter>(PublisherParameters))
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    FrameId = FJTAResultPublisherParameters->FrameId;
-  }  
-}
-
 void URFJTAResultPublisher::Init()
 {
   Super::Init();
-  JointController = Cast<URJointController>(Controller);
+  JointTrajectoryController = Cast<URJointTrajectoryController>(Controller);
 }
 
 void URFJTAResultPublisher::Publish()
 {
-  if (JointController && JointController->bPublishResult)
+  if (JointTrajectoryController && JointTrajectoryController->bPublishResult)
   {
     static int Seq = 0;
 
@@ -37,7 +28,7 @@ void URFJTAResultPublisher::Publish()
 
     ActionResult->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
 
-    FGoalStatusInfo GoalStatusInfo = JointController->GetGoalStatus();
+    FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
     actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
     ActionResult->SetStatus(GoalStatus);
 
@@ -47,7 +38,7 @@ void URFJTAResultPublisher::Publish()
     Handler->PublishMsg(Topic, ActionResult);
     Handler->Process();
 
-    JointController->bPublishResult = false;
+    JointTrajectoryController->bPublishResult = false;
     Seq++;
   }
 }

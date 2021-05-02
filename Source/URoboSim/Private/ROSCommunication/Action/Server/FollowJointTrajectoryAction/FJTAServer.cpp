@@ -8,14 +8,9 @@
 URFJTAServer::URFJTAServer()
 {
   ActionName = TEXT("/whole_body_controller/body/follow_joint_trajectory");
+  ControllerName = TEXT("JointTrajectoryController");
   FrameId = TEXT("odom");
   JointParamPath = TEXT("whole_body_controller/body/joints");
-  ControllerName = TEXT("JointController");
-  CancelSubscriber = CreateDefaultSubobject<URFJTACancelSubscriber>(TEXT("FJTACancelSubscriber"));
-  StatusPublisher = CreateDefaultSubobject<URFJTAStatusPublisher>(TEXT("FJTAStatusPublisher"));
-  ResultPublisher = CreateDefaultSubobject<URFJTAResultPublisher>(TEXT("FJTAResultPublisher"));
-  GoalSubscriber = CreateDefaultSubobject<URFJTAGoalSubscriber>(TEXT("FJTAGoalSubscriber"));
-  FeedbackPublisher = CreateDefaultSubobject<URFJTAFeedbackPublisher>(TEXT("FJTAFeedbackPublisher"));
 }
 
 void URFJTAServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
@@ -30,18 +25,27 @@ void URFJTAServer::SetActionServerParameters(URActionServerParameter *&ActionSer
 
 void URFJTAServer::Init()
 {
-  Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FrameId = FrameId;
-  Cast<URFJTAResultPublisher>(ResultPublisher)->FrameId = FrameId;
-  Cast<URFJTAStatusPublisher>(StatusPublisher)->FrameId = FrameId;
-
   Super::Init();
 
   GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
   GetJointsClient->GetParamArguments.Name = JointParamPath;
   GetJointsClient->Connect(Handler);
-  if (URJointController *JointController = Cast<URJointController>(GetOwner()->GetController(ControllerName)))
+  if (URJointTrajectoryController *JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(ControllerName)))
   {
-    JointController->bControllAllJoints = false;
-    GetJointsClient->GetJointNames(&JointController->JointNames);
+    JointTrajectoryController->bControllAllJoints = false;
+    GetJointsClient->GetJointNames(&JointTrajectoryController->JointNames);
   }
+}
+
+void URFJTAServer::CreateActionServer()
+{
+  CancelSubscriber = NewObject<URFJTACancelSubscriber>(GetOwner());
+  StatusPublisher = NewObject<URFJTAStatusPublisher>(GetOwner());
+  ResultPublisher = NewObject<URFJTAResultPublisher>(GetOwner());
+  GoalSubscriber = NewObject<URFJTAGoalSubscriber>(GetOwner());
+  FeedbackPublisher = NewObject<URFJTAFeedbackPublisher>(GetOwner());
+
+  Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FrameId = FrameId;
+  Cast<URFJTAResultPublisher>(ResultPublisher)->FrameId = FrameId;
+  Cast<URFJTAStatusPublisher>(StatusPublisher)->FrameId = FrameId;
 }

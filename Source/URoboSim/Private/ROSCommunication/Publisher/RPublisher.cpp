@@ -14,8 +14,11 @@ void URPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameter
 
 void URPublisher::Init()
 {
-  Super::Init();
   CreatePublisher();
+  if (Publisher.IsValid())
+  {
+    Handler->AddPublisher(Publisher);
+  }
 }
 
 void URPublisher::Tick()
@@ -29,8 +32,4 @@ void URPublisher::Tick()
 void URPublisher::CreatePublisher()
 {
   Publisher = MakeShareable<FROSBridgePublisher>(new FROSBridgePublisher(Topic, MessageType));
-  if (Publisher.IsValid())
-  {
-    Handler->AddPublisher(Publisher);
-  }
 }

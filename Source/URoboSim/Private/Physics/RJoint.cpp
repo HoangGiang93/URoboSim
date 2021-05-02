@@ -26,6 +26,17 @@ void URJoint::SetJointType(const USDFJoint *InSDFJoint)
 	Type->Upper = InSDFJoint->Axis->Upper;
 }
 
+void URJoint::SetState(const FJointState &TargetState)
+{
+	SetPosition(TargetState.JointPosition);
+}
+
+void URJoint::SetTargetState(const FJointState &TargetState)
+{
+	SetTargetPosition(TargetState.JointPosition);
+	SetTargetVelocity(TargetState.JointVelocity);
+}
+
 const FJointState URContinuousJoint::GetJointStateInROSUnit() const
 {
 	FJointState JointStateInROSUnit;

@@ -9,7 +9,7 @@ URJointTrajectoryControllerStatePublisher::URJointTrajectoryControllerStatePubli
   Topic = TEXT("/whole_body_controller/body/state");
   MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
   FrameId = TEXT("odom");
-  JointControllerName = TEXT("JointController");
+  JointTrajectoryControllerName = TEXT("JointTrajectoryController");
 }
 
 void URJointTrajectoryControllerStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
@@ -18,7 +18,7 @@ void URJointTrajectoryControllerStatePublisher::SetPublishParameters(URPublisher
   {
     Super::SetPublishParameters(PublisherParameters);
     FrameId = JointTrajectoryControllerStatePublisherParameters->FrameId;
-    JointControllerName = JointTrajectoryControllerStatePublisherParameters->JointControllerName;
+    JointTrajectoryControllerName = JointTrajectoryControllerStatePublisherParameters->JointTrajectoryControllerName;
   }
 }
 
@@ -27,16 +27,16 @@ void URJointTrajectoryControllerStatePublisher::Init()
   Super::Init();
   if (GetOwner())
   {
-    if (!(JointController = Cast<URJointController>(GetOwner()->GetController(JointControllerName))))
+    if (!(JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(JointTrajectoryControllerName))))
     {
-      UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointControllerName, *GetName())
+      UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerName, *GetName())
     }
   }
 }
 
 void URJointTrajectoryControllerStatePublisher::Publish()
 {
-  if (JointController)
+  if (JointTrajectoryController)
   {
     static int Seq = 0;
     static TSharedPtr<control_msgs::JointTrajectoryControllerState> State =
@@ -44,14 +44,14 @@ void URJointTrajectoryControllerStatePublisher::Publish()
 
     State->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
 
-    TArray<FString> JointNames = JointController->JointNames;
+    TArray<FString> JointNames = JointTrajectoryController->JointNames;
     TArray<double> DesiredPositions;
     TArray<double> CurrentPositions;
     TArray<double> ErrorPositions;
     TArray<double> DesiredVelocities;
     TArray<double> CurrentVelocities;
     TArray<double> ErrorVelocities;
-    for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
+    for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointTrajectoryController->GetTrajectoryStatusMap())
     {
       DesiredPositions.Add(TrajectoryStatus.Value.DesiredState.JointPosition);
       CurrentPositions.Add(TrajectoryStatus.Value.CurrentState.JointPosition);
@@ -85,6 +85,6 @@ void URJointTrajectoryControllerStatePublisher::Publish()
   }
   else
   {
-    UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointControllerName, *GetName())
+    UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerName, *GetName())
   }
 }

@@ -26,7 +26,7 @@ public:
   URGetJointsClient();
 
 public:
-  void GetJointNames(TArray<FString> *JointNames);
+  void GetJointNames(TArray<FString> *JointNamesPtr);
 };
 
 class FRGetJointsClientCallback final : public FRGetParamClientCallback

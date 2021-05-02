@@ -86,11 +86,15 @@ public:
 
   virtual void SetPosition(const float &Position) {}
 
+  void SetState(const FJointState &TargetState);
+
   virtual void SetTargetPositionInROSUnit(const float &TargetPosition) {}
 
   virtual void SetTargetVelocityInROSUnit(const float &TargetVelocity) {}
 
   virtual void SetPositionInROSUnit(const float &Position) {}
+
+  void SetTargetState(const FJointState &TargetState);
 
   virtual void SetTargetPosition(const float &TargetPosition) {}
 

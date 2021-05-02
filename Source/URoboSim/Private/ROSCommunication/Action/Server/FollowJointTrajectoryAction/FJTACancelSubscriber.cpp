@@ -15,18 +15,18 @@ void URFJTACancelSubscriber::CreateSubscriber()
 FRFJTACancelSubscriberCallback::FRFJTACancelSubscriberCallback(
     const FString &InTopic, const FString &InType, UObject *InController) : FROSBridgeSubscriber(InTopic, InType)
 {
-  JointController = Cast<URJointController>(InController);
+  JointTrajectoryController = Cast<URJointTrajectoryController>(InController);
 }
 
 void FRFJTACancelSubscriberCallback::Callback(TSharedPtr<FROSBridgeMsg> Msg)
 {
-  if (JointController)
+  if (JointTrajectoryController)
   {
-    JointController->bCancel = true;
+    JointTrajectoryController->bCancel = true;
   }
   else
   {
-    UE_LOG(LogRFJTACancelSubscriber, Error, TEXT("JointController not found"))
+    UE_LOG(LogRFJTACancelSubscriber, Error, TEXT("JointTrajectoryController not found"))
   }
 }
 

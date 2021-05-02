@@ -32,6 +32,11 @@ public:
 
   virtual void CallService(){}
 
+protected:
+  virtual void Init() override;
+  
+  virtual void CreateServiceClient(){};
+
 public:
   UPROPERTY(EditAnywhere)
   FString ServiceName;

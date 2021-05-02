@@ -22,15 +22,15 @@ public:
 
   ARModel *GetOwner() const { return Owner; }
 
-  void SetOwner(UObject *InOwner){ Owner = Cast<ARModel>(InOwner); }
+  void SetOwner(UObject *InOwner) { Owner = Cast<ARModel>(InOwner); }
 
   void SetOwner();
 
 public:
-  virtual void Tick() {};
+  virtual void Tick() {}
 
 protected:
-  virtual void Init();
+  virtual void Init() {}
 
 protected:
   TSharedPtr<FROSBridgeHandler> Handler;

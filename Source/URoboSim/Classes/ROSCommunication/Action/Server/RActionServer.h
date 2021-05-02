@@ -49,9 +49,6 @@ class UROBOSIM_API URActionServer : public URROSCommunication
   GENERATED_BODY()
 
 public:
-  URActionServer(){};
-
-public:
   virtual void Tick() override;
 
   virtual void SetActionServerParameters(URActionServerParameter *&ActionServerParameters);
@@ -65,6 +62,8 @@ public:
 
 protected:
   virtual void Init() override;
+
+  virtual void CreateActionServer(){};
 
 protected:
   UPROPERTY(VisibleAnywhere)

@@ -13,9 +13,11 @@ void URSubscriber::SetSubscriberParameters(URSubscriberParameter *&SubscriberPar
 
 void URSubscriber::Init()
 {
-  Super::Init();
   CreateSubscriber();
-  AddSubscriber();
+  if (Subscriber.IsValid())
+  {
+    Handler->AddSubscriber(Subscriber);
+  }
 }
 
 void URSubscriber::Tick()
@@ -23,13 +25,5 @@ void URSubscriber::Tick()
   if (Handler.IsValid())
   {
     Handler->Process();
-  }
-}
-
-void URSubscriber::AddSubscriber()
-{
-  if (Subscriber.IsValid())
-  {
-    Handler->AddSubscriber(Subscriber);
   }
 }

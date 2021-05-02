@@ -10,6 +10,7 @@ void URROSCommunication::Connect(const TSharedPtr<FROSBridgeHandler> &InHandler)
   {
     UE_LOG(LogRROSCommunication, Error, TEXT("No FROSBridgeHandler created in %s"), *GetName())
   }
+  SetOwner();
   Init();
 }
 
@@ -25,6 +26,7 @@ void URROSCommunication::Connect(const FString &WebsocketIPAddr, const uint32 &W
   {
     UE_LOG(LogRROSCommunication, Error, TEXT("No FROSBridgeHandler created in %s"), *GetName())
   }
+  SetOwner();
   Init();
 }
 
@@ -34,11 +36,6 @@ void URROSCommunication::Disconnect()
   {
     Handler->Disconnect();
   }
-}
-
-void URROSCommunication::Init()
-{
-  SetOwner();
 }
 
 void URROSCommunication::SetOwner()

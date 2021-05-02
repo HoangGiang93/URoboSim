@@ -13,7 +13,7 @@ void URActionServer::SetActionServerParameters(URActionServerParameter *&ActionS
 
 void URActionServer::Init()
 {
-  Super::Init();
+  CreateActionServer();
   if (GetOwner())
   {
     URController *Controller = GetOwner()->GetController(ControllerName);
@@ -27,7 +27,6 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *GoalSubscriber->GetName(), *GetName())
       GoalSubscriber->SetController(Controller);
-      GoalSubscriber->SetOwner(GetOwner());
       GoalSubscriber->Topic = ActionName + TEXT("/goal");
       GoalSubscriber->Connect(Handler);
     }
@@ -35,7 +34,6 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *CancelSubscriber->GetName(), *GetName())
       CancelSubscriber->SetController(Controller);
-      CancelSubscriber->SetOwner(GetOwner());
       CancelSubscriber->Topic = ActionName + TEXT("/cancel");
       CancelSubscriber->Connect(Handler);
     }
@@ -43,7 +41,6 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *StatusPublisher->GetName(), *GetName())
       StatusPublisher->SetController(Controller);
-      StatusPublisher->SetOwner(GetOwner());
       StatusPublisher->Topic = ActionName + TEXT("/status");
       StatusPublisher->Connect(Handler);
     }
@@ -51,7 +48,6 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *FeedbackPublisher->GetName(), *GetName())
       FeedbackPublisher->SetController(Controller);
-      FeedbackPublisher->SetOwner(GetOwner());
       FeedbackPublisher->Topic = ActionName + TEXT("/feedback");
       FeedbackPublisher->Connect(Handler);
     }
@@ -59,7 +55,6 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *ResultPublisher->GetName(), *GetName())
       ResultPublisher->SetController(Controller);
-      ResultPublisher->SetOwner(GetOwner());
       ResultPublisher->Topic = ActionName + TEXT("/result");
       ResultPublisher->Connect(Handler);
     }

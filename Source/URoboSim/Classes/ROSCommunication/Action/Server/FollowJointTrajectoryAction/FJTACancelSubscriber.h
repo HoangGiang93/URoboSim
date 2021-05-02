@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Controller/ControllerType/JointController/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointTrajectoryController.h"
 #include "ROSCommunication/Action/Server/RActionCancelSubscriber.h"
 // clang-format off
 #include "FJTACancelSubscriber.generated.h"
@@ -25,5 +25,5 @@ public:
 	void Callback(TSharedPtr<FROSBridgeMsg> Msg) override;
 
 private:
-	URJointController *JointController;
+	URJointTrajectoryController *JointTrajectoryController;
 };

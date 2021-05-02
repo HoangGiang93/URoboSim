@@ -40,8 +40,6 @@ public:
 
 protected:
   virtual void Init() override;
-
-  void AddSubscriber();
   
   virtual void CreateSubscriber(){}
 

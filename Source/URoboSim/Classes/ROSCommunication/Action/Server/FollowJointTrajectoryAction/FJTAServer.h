@@ -15,7 +15,7 @@ public:
   URFJTAServerParameter()
   {
     ActionName = TEXT("/whole_body_controller/body/follow_joint_trajectory");
-    ControllerName = TEXT("JointController");
+    ControllerName = TEXT("JointTrajectoryController");
     FrameId = TEXT("odom");
     JointParamPath = TEXT("/whole_body_controller/body/joints");
   }
@@ -28,7 +28,7 @@ public:
   FString JointParamPath; 
 };
 
-UCLASS(Blueprintable, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
+UCLASS()
 class UROBOSIM_API URFJTAServer final : public URActionServer
 {
   GENERATED_BODY()
@@ -48,6 +48,8 @@ public:
 
 protected:
   void Init() override;
+
+  void CreateActionServer() override;
 
 private:
   URGetJointsClient *GetJointsClient;

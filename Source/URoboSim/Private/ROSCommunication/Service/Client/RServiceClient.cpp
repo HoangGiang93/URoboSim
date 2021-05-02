@@ -11,6 +11,11 @@ void URServiceClient::SetServiceClientParameters(URServiceClientParameter *&Serv
   }
 }
 
+void URServiceClient::Init()
+{
+  CreateServiceClient();
+}
+
 void URServiceClient::Tick()
 {
   if (Handler.IsValid())

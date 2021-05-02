@@ -10,37 +10,17 @@ URFJTAFeedbackPublisher::URFJTAFeedbackPublisher()
   FrameId = TEXT("odom");
 }
 
-void URFJTAFeedbackPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  if (URFJTAFeedbackPublisherParameter *FJTAFeedbackPublisherParameters = Cast<URFJTAFeedbackPublisherParameter>(PublisherParameters))
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    FrameId = FJTAFeedbackPublisherParameters->FrameId;
-  }
-}
-
 void URFJTAFeedbackPublisher::Init()
 {
   Super::Init();
-  if (GetOwner())
-  {
-    JointController = Cast<URJointController>(Controller);
-    if (!JointController)
-    {
-      UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("JointController not found in %s"), *GetOwner()->GetName())
-    }
-  }
-  else
-  {
-    UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("Owner not found in %s, Outer is %s"), *GetName(), *GetOuter()->GetName())
-  }
+  JointTrajectoryController = Cast<URJointTrajectoryController>(Controller);
 }
 
 void URFJTAFeedbackPublisher::Publish()
 {
-  if (JointController)
+  if (JointTrajectoryController)
   {
-    if (JointController->State == UJointControllerState::FollowJointTrajectory)
+    if (JointTrajectoryController->State == UJointTrajectoryControllerState::FollowJointTrajectory)
     {
       static int Seq = 0;
       TSharedPtr<control_msgs::FollowJointTrajectoryActionFeedback> Feedback =
@@ -48,7 +28,7 @@ void URFJTAFeedbackPublisher::Publish()
 
       Feedback->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
 
-      FGoalStatusInfo GoalStatusInfo = JointController->GetGoalStatus();
+      FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
       actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
       Feedback->SetStatus(GoalStatus);
 
@@ -59,7 +39,7 @@ void URFJTAFeedbackPublisher::Publish()
       TArray<double> DesiredVelocities;
       TArray<double> CurrentVelocities;
       TArray<double> ErrorVelocities;
-      for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointController->GetTrajectoryStatusArray())
+      for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointTrajectoryController->GetTrajectoryStatusMap())
       {
         JointNames.Add(TrajectoryStatus.Key);
         DesiredPositions.Add(TrajectoryStatus.Value.DesiredState.JointPosition);
@@ -99,6 +79,6 @@ void URFJTAFeedbackPublisher::Publish()
   }
   else
   {
-    UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("JointController not found in %s"), *GetName())
+    UE_LOG(LogRFJTAFeedbackPublisher, Error, TEXT("JointTrajectoryController not found in %s"), *GetName())
   }
 }

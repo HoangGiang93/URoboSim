@@ -51,7 +51,7 @@ public:
   void CallService() override;
 
 protected:
-  virtual void Init() override;
+  virtual void CreateServiceClient() override;
 
 public:
   UPROPERTY(EditAnywhere)

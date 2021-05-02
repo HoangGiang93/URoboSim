@@ -9,16 +9,6 @@ URActionStatusPublisher::URActionStatusPublisher()
   FrameId = TEXT("odom");
 }
 
-void URActionStatusPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
-{
-  if (URActionStatusPublisherParameter *ActionStatusPublisherParameters = Cast<URActionStatusPublisherParameter>(PublisherParameters))
-  {
-    Super::SetPublishParameters(PublisherParameters);
-    MessageType = ActionStatusPublisherParameters->MessageType;
-    FrameId = ActionStatusPublisherParameters->FrameId;
-  }
-}
-
 void URActionStatusPublisher::Publish()
 {
   if (Controller)

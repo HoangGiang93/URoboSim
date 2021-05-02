@@ -36,7 +36,6 @@ void URROSCommunicationBuilder::Build(const TArray<FRPublisherConfiguration> &Pu
       if (Publisher)
       {
         UE_LOG(LogRROSCommunicationBuilder, Log, TEXT("Create %s of %s"), *Publisher->GetName(), *Owner->GetName());
-        Publisher->SetOwner();
         Publisher->SetPublishParameters(PublisherConfiguration.PublisherParameters);
         ROSCommunicationComponent->AddPublisher(Publisher);
       }
@@ -51,7 +50,6 @@ void URROSCommunicationBuilder::Build(const TArray<FRPublisherConfiguration> &Pu
       if (Subscriber)
       {
         UE_LOG(LogRROSCommunicationBuilder, Log, TEXT("Create %s of %s"), *Subscriber->GetName(), *Owner->GetName());
-        Subscriber->SetOwner();
         Subscriber->SetSubscriberParameters(SubscriberConfiguration.SubscriberParameters);
         ROSCommunicationComponent->AddSubscriber(Subscriber);
       }
@@ -66,7 +64,6 @@ void URROSCommunicationBuilder::Build(const TArray<FRPublisherConfiguration> &Pu
       if (ServiceClient)
       {
         UE_LOG(LogRROSCommunicationBuilder, Log, TEXT("Create %s of %s"), *ServiceClient->GetName(), *Owner->GetName());
-        ServiceClient->SetOwner();
         ServiceClient->SetServiceClientParameters(ServiceClientConfiguration.ServiceClientParameters);
         ROSCommunicationComponent->AddServiceClient(ServiceClient);
       }

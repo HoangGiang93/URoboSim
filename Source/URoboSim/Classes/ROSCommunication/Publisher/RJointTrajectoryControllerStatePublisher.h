@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RPublisher.h"
-#include "Controller/ControllerType/JointController/RJointController.h"
+#include "Controller/ControllerType/JointController/RJointTrajectoryController.h"
 // clang-format off
 #include "RJointTrajectoryControllerStatePublisher.generated.h"
 // clang-format on
@@ -17,7 +17,7 @@ public:
     Topic = TEXT("/whole_body_controller/body/state");
     MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
     FrameId = TEXT("odom");
-    JointControllerName = TEXT("JointController");
+    JointTrajectoryControllerName = TEXT("JointTrajectoryController");
   }
 
 public:
@@ -25,7 +25,7 @@ public:
   FString FrameId;
 
   UPROPERTY(EditAnywhere)
-  FString JointControllerName;
+  FString JointTrajectoryControllerName;
 };
 
 UCLASS()
@@ -49,8 +49,8 @@ public:
   FString FrameId;
 
   UPROPERTY(EditAnywhere)
-  FString JointControllerName;
+  FString JointTrajectoryControllerName;
 
 private:
-  URJointController *JointController;
+  URJointTrajectoryController *JointTrajectoryController;
 };

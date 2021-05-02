@@ -9,16 +9,15 @@ URGetParamClient::URGetParamClient()
 
 void URGetParamClient::SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters)
 {
-  if (URGetParamClientParameter *GetParamClientParameter = Cast<URGetParamClientParameter>(ServiceClientParameters))
+  if (URGetParamClientParameter *GetParamClientParameters = Cast<URGetParamClientParameter>(ServiceClientParameters))
   {
     Super::SetServiceClientParameters(ServiceClientParameters);
-    GetParamArguments = GetParamClientParameter->GetParamArguments;
+    GetParamArguments = GetParamClientParameters->GetParamArguments;
   }  
 }
 
-void URGetParamClient::Init()
+void URGetParamClient::CreateServiceClient()
 {
-  Super::Init();
   if (GetOwner())
   {
     // Create a request instance with request parameters
