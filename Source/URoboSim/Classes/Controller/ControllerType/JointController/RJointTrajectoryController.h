@@ -56,16 +56,6 @@ public:
   TMap<FString, FJointState> JointStates;
 };
 
-struct FTrajectoryStatus
-{
-public:
-  FJointState CurrentState;
-
-  FJointState DesiredState;
-
-  FJointState ErrorState;
-};
-
 UCLASS()
 class UROBOSIM_API URJointTrajectoryControllerParameter : public URJointControllerParameter
 {
@@ -87,8 +77,6 @@ public:
 public:
   void Reset();
 
-  const TMap<FString, FTrajectoryStatus> GetTrajectoryStatusMap() const { return TrajectoryStatusMap; }
-
   void FollowJointTrajectory();
 
 public:
@@ -98,8 +86,6 @@ public:
   TArray<FTrajectoryPoints> DesiredTrajectory;
 
 protected:
-  TMap<FString, FTrajectoryStatus> TrajectoryStatusMap;
-
   uint32 TrajectoryPointIndex;
 
   float ActionStartTime;

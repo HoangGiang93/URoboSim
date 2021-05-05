@@ -44,6 +44,8 @@ public:
 protected:
   void Init() override;
 
+  void SetJointNames(TArray<FString> InJointNames) { JointNames = InJointNames; }
+
 public:
   UPROPERTY(EditAnywhere)
   FString FrameId; 

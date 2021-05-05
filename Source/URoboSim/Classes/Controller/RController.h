@@ -27,7 +27,11 @@ public:
   virtual void Init();
 
 public:
-  ARModel *GetOwner();
+  ARModel *GetOwner() const { return Owner; }
+
+  void SetOwner(UObject *InOwner) { Owner = Cast<ARModel>(InOwner); }
+
+  void SetOwner();
 
   virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) {}
 

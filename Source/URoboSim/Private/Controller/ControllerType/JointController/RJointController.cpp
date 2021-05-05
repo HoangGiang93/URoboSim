@@ -24,7 +24,7 @@ void URJointController::SetControllerParameters(URControllerParameter *&Controll
   }
 }
 
-void URJointController::SetJointNames()
+void URJointController::SetJointNames(const TArray<FString> &JointNames)
 {
   for (const FString &JointName : JointNames)
   {
@@ -36,6 +36,11 @@ void URJointController::SetJointNames()
   }
 }
 
+TFunction<void (const TArray<FString> &JointNames)> URJointController::SetJointNamesFunction()
+{
+  return [this](const TArray<FString> &JointNames){ SetJointNames(JointNames); };
+}
+
 void URJointController::Init()
 {
   Super::Init();
@@ -43,15 +48,16 @@ void URJointController::Init()
   bPublishResult = false;
   if (GetOwner())
   {
+    SetMode();
     if (bControllAllJoints)
     {
+      TArray<FString> JointNames;
       for (URJoint *&Joint : GetOwner()->GetJoints())
       {
         JointNames.Add(Joint->GetName());
       }
+      SetJointNames(JointNames);
     }
-    SetJointNames();
-    SetMode();
   }
   else
   {
@@ -111,28 +117,25 @@ void URJointController::SetTargetJointState()
 {
   if (GetOwner())
   {
-    for (const FString &JointName : JointNames)
+    for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
     {
-      if (URJoint *Joint = GetOwner()->GetJoint(JointName))
+      if (URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
       {
         switch (Mode)
         {
         case UJointControllerMode::Dynamic:
-          if (!DesiredJointStates.Contains(JointName))
-          {
-            Joint->SetDrive(EnableDrive);
-          }
-          Joint->SetTargetState(DesiredJointStates.FindOrAdd(JointName));
+          Joint->SetDrive(EnableDrive);
+          Joint->SetTargetState(DesiredJointState.Value);
           break;
 
         case UJointControllerMode::Kinematic:
-          Joint->SetState(DesiredJointStates.FindOrAdd(JointName));
+          Joint->SetState(DesiredJointState.Value);
           break;
         }
       }
       else
       {
-        UE_LOG(LogRJointController, Error, TEXT("%s of %s not found"), *JointName, *GetOwner()->GetName())
+        UE_LOG(LogRJointController, Error, TEXT("%s of %s not found"), *DesiredJointState.Key, *GetOwner()->GetName())
       }
     }
   }

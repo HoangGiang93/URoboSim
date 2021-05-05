@@ -14,7 +14,6 @@ void URGripperController::Init()
     {
       if (URJoint *Joint = GetOwner()->GetJoint(GripperJoint.Key))
       {
-        JointNames.Add(GripperJoint.Key);
         DesiredJointStates.Add(GripperJoint.Key, FJointState());
         Joint->SetDrive(EnableDrive);
       } 

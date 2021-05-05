@@ -11,27 +11,19 @@ URJointTrajectoryController::URJointTrajectoryController()
 
 void URJointTrajectoryController::Reset()
 {
-  DesiredJointStates.Empty();
-  TrajectoryStatusMap.Empty();
   TrajectoryPointIndex = 0;
   DesiredTrajectory.Empty();
-
-  SetJointNames();
-  for (const FString &JointName : JointNames)
-  {
-    TrajectoryStatusMap.Add(JointName);
-  }
 }
 
 void URJointTrajectoryController::FollowJointTrajectory()
 {
   TrajectoryPointIndex = 0;
   LastTrajectoryPoints.Reset();
-  for (const FString &JointName : JointNames)
+  for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
   {
-    if (URJoint *Joint = GetOwner()->GetJoint(JointName))
+    if (URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
     {
-      LastTrajectoryPoints.JointStates.Add(JointName, Joint->GetJointStateInROSUnit());
+      LastTrajectoryPoints.JointStates.Add(Joint->GetName(), Joint->GetJointStateInROSUnit());
     }
   }
   ActionStartTime = GetOwner()->GetGameTimeSinceCreation();
@@ -60,24 +52,6 @@ bool URJointTrajectoryController::CheckTrajectoryPoint()
   if (NextTimeStep == 0)
   {
     TrajectoryPointIndex++;
-  }
-
-  for (const FString &JointName : JointNames)
-  {
-    if (URJoint *Joint = GetOwner()->GetJoint(JointName))
-    {
-      TrajectoryStatusMap[JointName].CurrentState = Joint->GetJointStateInROSUnit();
-      if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName))
-      {
-        TrajectoryStatusMap[JointName].DesiredState = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName];
-        TrajectoryStatusMap[JointName].ErrorState.JointPosition = TrajectoryStatusMap[JointName].DesiredState.JointPosition - TrajectoryStatusMap[JointName].CurrentState.JointPosition;
-        TrajectoryStatusMap[JointName].ErrorState.JointVelocity = TrajectoryStatusMap[JointName].DesiredState.JointVelocity - TrajectoryStatusMap[JointName].CurrentState.JointVelocity;
-      }
-    }
-    else
-    {
-      UE_LOG(LogRJointTrajectoryController, Error, TEXT("%s of DesiredTrajectory is not contained in %s"), *JointName, *GetOwner()->GetName());
-    }
   }
 
   GoalStatusList.Last().Status = 1;
@@ -132,9 +106,9 @@ void URJointTrajectoryController::SetDesiredJointState()
       CurrentTimeStep = NextTimeStep;
     }
 
-    for (TPair<FString, FTrajectoryStatus> &TrajectoryStatus : TrajectoryStatusMap)
+    for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
     {
-      const FString JointName = TrajectoryStatus.Key;
+      const FString JointName = DesiredJointState.Key;
       if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName) && LastTrajectoryPoints.JointStates.Contains(JointName) && DesiredJointStates.Contains(JointName))
       {
         float DiffJointPosition = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointPosition - LastTrajectoryPoints.JointStates[JointName].JointPosition;

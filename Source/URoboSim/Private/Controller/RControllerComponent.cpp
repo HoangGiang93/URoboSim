@@ -10,8 +10,7 @@ URControllerComponent::URControllerComponent()
 
 void URControllerComponent::Init()
 {
-  ARModel *Owner = Cast<ARModel>(GetOwner());
-  if (Owner)
+  if (ARModel *Owner = Cast<ARModel>(GetOwner()))
   {
     for (URController *&Controller : Controllers)
     {   
@@ -38,7 +37,7 @@ URController *URControllerComponent::GetController(const FString &ControllerName
   }
   else
   {
-    UE_LOG(LogRControllerComponent, Error, TEXT("Controller %s not found in %s"), *ControllerName, *GetName())
+    UE_LOG(LogRControllerComponent, Error, TEXT("%s not found in %s"), *ControllerName, *GetName())
     return nullptr;
   }
 }

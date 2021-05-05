@@ -48,7 +48,7 @@ public:
 public:
   virtual void SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters) override;
 
-  void CallService() override;
+  virtual void CallService() override;
 
 protected:
   virtual void CreateServiceClient() override;

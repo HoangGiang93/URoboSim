@@ -5,6 +5,11 @@ DEFINE_LOG_CATEGORY_STATIC(LogRController, Log, All);
 
 void URController::Init()
 {
+  SetOwner();
+}
+
+void URController::SetOwner()
+{
   UE_LOG(LogRController, Log, TEXT("Initialize %s"), *GetName())
   if (!Owner)
   {
@@ -21,15 +26,6 @@ void URController::Init()
   {
     UE_LOG(LogRController, Error, TEXT("Owner of %s not found, Outer is %s"), *GetName(), *GetOuter()->GetName())
   }
-}
-
-ARModel *URController::GetOwner()
-{
-  if (!Owner)
-  {
-    UE_LOG(LogRController, Error, TEXT("%s is not initialized"), *GetName())
-  }
-  return Owner;
 }
 
 void URController::CancelAction()

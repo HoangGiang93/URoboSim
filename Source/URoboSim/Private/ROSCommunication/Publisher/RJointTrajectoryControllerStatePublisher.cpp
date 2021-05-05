@@ -44,21 +44,28 @@ void URJointTrajectoryControllerStatePublisher::Publish()
 
     State->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
 
-    TArray<FString> JointNames = JointTrajectoryController->JointNames;
+    TArray<FString> JointNames;
     TArray<double> DesiredPositions;
     TArray<double> CurrentPositions;
     TArray<double> ErrorPositions;
     TArray<double> DesiredVelocities;
     TArray<double> CurrentVelocities;
     TArray<double> ErrorVelocities;
-    for (const TPair<FString, FTrajectoryStatus> &TrajectoryStatus : JointTrajectoryController->GetTrajectoryStatusMap())
+    for (const TPair<FString, FJointState> &DesiredJointState : JointTrajectoryController->DesiredJointStates)
     {
-      DesiredPositions.Add(TrajectoryStatus.Value.DesiredState.JointPosition);
-      CurrentPositions.Add(TrajectoryStatus.Value.CurrentState.JointPosition);
-      ErrorPositions.Add(TrajectoryStatus.Value.ErrorState.JointPosition);
-      DesiredVelocities.Add(TrajectoryStatus.Value.DesiredState.JointVelocity);
-      CurrentVelocities.Add(TrajectoryStatus.Value.CurrentState.JointVelocity);
-      ErrorVelocities.Add(TrajectoryStatus.Value.ErrorState.JointVelocity);
+      if (URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
+      {
+        JointNames.Add(Joint->GetName());
+
+        DesiredPositions.Add(DesiredJointState.Value.JointPosition);
+        DesiredVelocities.Add(DesiredJointState.Value.JointVelocity);
+
+        CurrentPositions.Add(Joint->GetJointState().JointPosition);
+        CurrentVelocities.Add(Joint->GetJointState().JointVelocity);
+
+        ErrorPositions.Add(DesiredJointState.Value.JointPosition - Joint->GetJointState().JointPosition);
+        ErrorVelocities.Add(DesiredJointState.Value.JointVelocity - Joint->GetJointState().JointVelocity);
+      }
     }
 
     State->SetJointNames(JointNames);

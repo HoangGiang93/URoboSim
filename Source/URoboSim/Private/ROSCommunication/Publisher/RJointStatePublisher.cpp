@@ -39,7 +39,7 @@ void URJointStatePublisher::Init()
     GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
     GetJointsClient->GetParamArguments.Name = JointParamPath;
     GetJointsClient->Connect(Handler);
-    GetJointsClient->GetJointNames(&JointNames);
+    GetJointsClient->GetJointNames([this](const TArray<FString> &InJointNames){ JointNames = InJointNames; });
   }
 }
 

@@ -26,17 +26,17 @@ public:
   URGetJointsClient();
 
 public:
-  void GetJointNames(TArray<FString> *JointNamesPtr);
+  void GetJointNames(TFunction<void (const TArray<FString> &JointNames)> GetJointNamesFunction);
 };
 
 class FRGetJointsClientCallback final : public FRGetParamClientCallback
 {
 public:
-  FRGetJointsClientCallback(const FString &InServiceName, const FString &InServiceType, TArray<FString> *InJointNamesPtr);
+  FRGetJointsClientCallback(const FString &InServiceName, const FString &InServiceType, TFunction<void (const TArray<FString> &JointNames)> InFunction);
 
 protected:
   void Callback() override;
 
 private:
-  TArray<FString> *JointNamesPtr;
+  TFunction<void (const TArray<FString> &JointNames)> Function;
 };
