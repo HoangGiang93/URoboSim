@@ -5,9 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRCamera, Log, All);
 
 URCamera::URCamera()
 {
-  CameraName = TEXT("RGBDCamera");
-  ReferenceLinkName = TEXT("");
-  CameraPoseOffset.SetRotation(FQuat(FRotator(90.f, 0.f, 90.f)));
+
 }
 
 void URCamera::Init()
@@ -21,7 +19,7 @@ void URCamera::Init()
 
     for (UStaticMeshComponent *&ActorComponent : ActorComponents)
     {
-      if (ActorComponent->GetName().Equals(ReferenceLinkName))
+      if (ActorComponent->GetName().Equals(CameraParameters.ReferenceLinkName))
       {
         ReferenceLink = ActorComponent;
         break;
@@ -34,19 +32,19 @@ void URCamera::Init()
       for (AActor *&Actor : Actors)
       {
         UE_LOG(LogRCamera, Log, TEXT("Found Camera %s"), *Actor->GetName())
-        if (Actor->GetName().Equals(CameraName))
+        if (Actor->GetName().Equals(CameraParameters.CameraName))
         {
           Actor->AttachToComponent(ReferenceLink, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-          Actor->AddActorLocalOffset(CameraPoseOffset.GetLocation());
-          Actor->AddActorLocalRotation(CameraPoseOffset.GetRotation());
+          Actor->AddActorLocalOffset(CameraParameters.CameraPoseOffset.GetLocation());
+          Actor->AddActorLocalRotation(CameraParameters.CameraPoseOffset.GetRotation());
           return;
         }
       }
-      UE_LOG(LogRCamera, Error, TEXT("%s of %s not found"), *CameraName, *GetOwner()->GetName())
+      UE_LOG(LogRCamera, Error, TEXT("%s of %s not found"), *CameraParameters.CameraName, *GetOwner()->GetName())
     }
     else
     {
-      UE_LOG(LogRCamera, Error, TEXT("%s of %s not found"), *ReferenceLinkName, *GetOwner()->GetName());
+      UE_LOG(LogRCamera, Error, TEXT("%s of %s not found"), *CameraParameters.ReferenceLinkName, *GetOwner()->GetName());
     }
   }
   else
@@ -57,13 +55,11 @@ void URCamera::Init()
 
 void URCamera::SetSensorParameters(URSensorParameter *&SensorParameters)
 {
-  URCameraParameter *CameraParameters = Cast<URCameraParameter>(SensorParameters);
-  if (CameraParameters)
+  URCameraParameter *InCameraParameters = Cast<URCameraParameter>(SensorParameters);
+  if (InCameraParameters)
   {
     Super::SetSensorParameters(SensorParameters);
-    CameraName = CameraParameters->CameraName;
-    ReferenceLinkName = CameraParameters->ReferenceLinkName;
-    CameraPoseOffset = CameraParameters->CameraPoseOffset;
+    CameraParameters = InCameraParameters->CameraParameters;
   }
 }
 

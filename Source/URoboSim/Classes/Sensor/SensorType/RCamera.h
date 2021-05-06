@@ -6,13 +6,13 @@
 #include "RCamera.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URCameraParameter final : public URSensorParameter
+USTRUCT()
+struct FRCameraParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URCameraParameter()
+  FRCameraParameterContainer()
   {
     CameraName = TEXT("RGBDCamera");
     ReferenceLinkName = TEXT("");
@@ -28,6 +28,16 @@ public:
 
   UPROPERTY(EditAnywhere)
   FTransform CameraPoseOffset;
+};
+
+UCLASS()
+class UROBOSIM_API URCameraParameter final : public URSensorParameter
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRCameraParameterContainer CameraParameters;
 };
 
 UCLASS()
@@ -48,13 +58,7 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString CameraName;
-
-  UPROPERTY(EditAnywhere)
-  FString ReferenceLinkName;
-
-  UPROPERTY(EditAnywhere)
-  FTransform CameraPoseOffset;
+  FRCameraParameterContainer CameraParameters;
 
 private:
   UStaticMeshComponent *ReferenceLink = nullptr;

@@ -35,11 +35,11 @@ void URLidar2DPublisher::Publish()
     static TSharedPtr<sensor_msgs::LaserScan> ScanData = MakeShareable(new sensor_msgs::LaserScan());
 
     ScanData->SetHeader(std_msgs::Header(Seq++, FROSTime(), Lidar2DPublisherParameters.LidarReferenceROSLinkName));
-    ScanData->SetAngleMin(Lidar->ScanAngleMin);
-    ScanData->SetAngleMax(Lidar->ScanAngleMax);
+    ScanData->SetAngleMin(Lidar->Lidar2DParameters.ScanAngleMin);
+    ScanData->SetAngleMax(Lidar->Lidar2DParameters.ScanAngleMax);
     ScanData->SetAngleIncrement(Lidar->AngularIncrement);
-    ScanData->SetRangeMin(Lidar->MinimumDistance / 100.);
-    ScanData->SetRangeMax(Lidar->MaximumDistance / 100.);
+    ScanData->SetRangeMin(Lidar->Lidar2DParameters.MinimumDistance / 100.);
+    ScanData->SetRangeMax(Lidar->Lidar2DParameters.MaximumDistance / 100.);
     ScanData->SetTimeIncrement(Lidar->TimeIncrement);
     ScanData->SetScanTime(Lidar->ScanTime);
 

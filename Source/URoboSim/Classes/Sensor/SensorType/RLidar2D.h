@@ -5,13 +5,13 @@
 #include "RLidar2D.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URLidar2DParameter final : public URSensorParameter
+USTRUCT()
+struct FRLidar2DParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URLidar2DParameter()
+  FRLidar2DParameterContainer()
   {
     UpdateRate = 40.f;
 
@@ -21,56 +21,9 @@ public:
 
     MinimumDistance = 1.f;
     MaximumDistance = 1000.f;
-
-    ReferenceLinkName = TEXT("base_footprint_collision");
   }
 
-public:
-  UPROPERTY(EditAnywhere)
-  float UpdateRate;
-
-  UPROPERTY(EditAnywhere)
-  float ScanAngleMin;
-
-  UPROPERTY(EditAnywhere)
-  float ScanAngleMax;
-
-  UPROPERTY(EditAnywhere)
-  int SampleNumber;
-
-  UPROPERTY(EditAnywhere)
-  float MinimumDistance;
-
-  UPROPERTY(EditAnywhere)
-  float MaximumDistance;
-
-  UPROPERTY(EditAnywhere)
-  FVector LidarBodyOffset;
-
-  UPROPERTY(EditAnywhere)
-  FString ReferenceLinkName;
-};
-
-UCLASS()
-class UROBOSIM_API URLidar2D final : public URSensor
-{
-  GENERATED_BODY()
-
-public:
-  URLidar2D();
-
-public:
-  // Called every frame
-  void Tick(const float &InDeltaTime) override;
-
-  void Init() override;
-
-  void SetSensorParameters(URSensorParameter *&SensorParameters) override;
-
-public:
-  TArray<float> GetMeasuredData() const;
-
-public:
+public : 
   UPROPERTY(EditAnywhere, Category = "LiDAR|Scanning Specs",
             meta = (DisplayName = "Frequency at which the sensor data is generated"))
   float UpdateRate;
@@ -100,8 +53,40 @@ public:
 
   UPROPERTY(EditAnywhere, Category = "LiDAR|Scanning Specs")
   FString ReferenceLinkName;
+};
 
-  bool bPublishResult;
+UCLASS()
+class UROBOSIM_API URLidar2DParameter final : public URSensorParameter
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRLidar2DParameterContainer Lidar2DParameters;
+};
+
+UCLASS()
+class UROBOSIM_API URLidar2D final : public URSensor
+{
+  GENERATED_BODY()
+
+public:
+  URLidar2D();
+
+public:
+  // Called every frame
+  void Tick(const float &InDeltaTime) override;
+
+  void Init() override;
+
+  void SetSensorParameters(URSensorParameter *&SensorParameters) override;
+
+public:
+  TArray<float> GetMeasuredData() const;
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRLidar2DParameterContainer Lidar2DParameters;
 
   float ScanTime;
 
