@@ -9,7 +9,7 @@ void URFingerGripperController::Init()
 
   if (GetOwner())
   {
-    for (const TPair<FString, FGripperInformation> &GripperJoint : GripperJoints)
+    for (const TPair<FString, FGripperInformation> &GripperJoint : GripperControllerParameters.GripperJoints)
     {
       URJoint *Joint = GetOwner()->GetJoint(GripperJoint.Key);
       if (Joint && Joint->GetChild())
@@ -38,10 +38,10 @@ void URFingerGripperController::Tick(const float &InDeltaTime)
 
 void URFingerGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)
 {
-  if (URFingerGripperControllerParameter *FingerGripperControllerParameters = Cast<URFingerGripperControllerParameter>(ControllerParameters))
+  if (URFingerGripperControllerParameter *InFingerGripperControllerParameters = Cast<URFingerGripperControllerParameter>(ControllerParameters))
   {
     Super::SetControllerParameters(ControllerParameters);
-    GripperHitDistance = FingerGripperControllerParameters->GripperHitDistance;
+    FingerGripperControllerParameters = InFingerGripperControllerParameters->FingerGripperControllerParameters;
   }
 }
 
@@ -79,7 +79,7 @@ void URFingerGripperController::GraspObject()
   {
     if (GetOwner()->GetJoint(DesiredJointState.Key))
     {
-      DesiredJointState.Value.JointPosition = GetOwner()->GetJoint(DesiredJointState.Key)->GetJointState().JointPosition * GripperHitDistance;
+      DesiredJointState.Value.JointPosition = GetOwner()->GetJoint(DesiredJointState.Key)->GetJointState().JointPosition * FingerGripperControllerParameters.GripperHitDistance;
       DesiredJointState.Value.JointVelocity = 0.f;
     }
     else

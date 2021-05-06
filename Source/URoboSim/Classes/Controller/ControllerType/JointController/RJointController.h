@@ -12,20 +12,17 @@ enum class UJointControllerMode : uint8
   Kinematic
 };
 
-UCLASS()
-class UROBOSIM_API URJointControllerParameter : public URControllerParameter
+USTRUCT()
+struct FRJointControllerParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URJointControllerParameter()
+  FRJointControllerParameterContainer()
   {
     Mode = UJointControllerMode::Dynamic;
-    bDisableCollision = true;
-    bControllAllJoints = true;
-    EnableDrive.PositionStrength = 1E5;
-    EnableDrive.VelocityStrength = 1E5;
-    EnableDrive.MaxForce = 1E10;
+    bDisableCollision = false;
+    bControllAllJoints = false;
   }
 
 public:
@@ -40,6 +37,16 @@ public:
 
   UPROPERTY(EditAnywhere)
   bool bControllAllJoints;
+};
+
+UCLASS()
+class UROBOSIM_API URJointControllerParameter : public URControllerParameter
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRJointControllerParameterContainer JointControllerParameters;
 };
 
 UCLASS()
@@ -61,13 +68,7 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FEnableDrive EnableDrive;
-
-  UPROPERTY(EditAnywhere)
-  bool bDisableCollision;
-
-  UPROPERTY(EditAnywhere)
-  bool bControllAllJoints;
+  FRJointControllerParameterContainer JointControllerParameters;
 
   UPROPERTY(EditAnywhere)
   TMap<FString, FJointState> DesiredJointStates;
@@ -76,8 +77,4 @@ protected:
   void SetMode();
 
   void SetTargetJointState();
-
-protected:
-  UPROPERTY(EditAnywhere)
-  UJointControllerMode Mode;
 };

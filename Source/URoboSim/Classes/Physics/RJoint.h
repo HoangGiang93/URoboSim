@@ -26,7 +26,7 @@ public:
   float PositionStrength = 1E5;
 
   UPROPERTY(EditAnywhere)
-  float VelocityStrength = 1E5;
+  float VelocityStrength = 1E4;
 
   UPROPERTY(EditAnywhere)
   float MaxForce = 1E10;

@@ -29,7 +29,7 @@ void URFJTAServer::Init()
   GetJointsClient->Connect(Handler);
   if (URJointTrajectoryController *JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(CommonActionServerParameters.ControllerName)))
   {
-    JointTrajectoryController->bControllAllJoints = false;
+    JointTrajectoryController->JointControllerParameters.bControllAllJoints = false;
     GetJointsClient->GetJointNames([JointTrajectoryController](const TArray<FString> &InJointNames) { JointTrajectoryController->SetJointNames(InJointNames); });
   }
 }

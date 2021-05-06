@@ -7,15 +7,15 @@ void URGripperController::Init()
   URController::Init();
 
   bPublishResult = false;
-  bControllAllJoints = false;
+  JointControllerParameters.bControllAllJoints = false;
   if (GetOwner())
   {
-    for (const TPair<FString, FGripperInformation> &GripperJoint : GripperJoints)
+    for (const TPair<FString, FGripperInformation> &GripperJoint : GripperControllerParameters.GripperJoints)
     {
       if (URJoint *Joint = GetOwner()->GetJoint(GripperJoint.Key))
       {
         DesiredJointStates.Add(GripperJoint.Key, FJointState());
-        Joint->SetDrive(EnableDrive);
+        Joint->SetDrive(JointControllerParameters.EnableDrive);
       } 
     } 
     SetMode();
@@ -55,10 +55,10 @@ void URGripperController::Tick(const float &InDeltaTime)
 
 void URGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)
 {
-  if (URGripperControllerParameter *GripperControllerParameters = Cast<URGripperControllerParameter>(ControllerParameters))
+  if (URGripperControllerParameter *InGripperControllerParameters = Cast<URGripperControllerParameter>(ControllerParameters))
   {
     Super::SetControllerParameters(ControllerParameters);
-    GripperJoints = GripperControllerParameters->GripperJoints;
+    GripperControllerParameters = InGripperControllerParameters->GripperControllerParameters;
   }
 }
 
@@ -66,9 +66,9 @@ void URGripperController::OpenGripper()
 {
   for (TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
   {
-    if (GripperJoints.Contains(DesiredJointState.Key))
+    if (GripperControllerParameters.GripperJoints.Contains(DesiredJointState.Key))
     {
-      DesiredJointState.Value.JointPosition = GripperJoints[DesiredJointState.Key].OpenPosition;
+      DesiredJointState.Value.JointPosition = GripperControllerParameters.GripperJoints[DesiredJointState.Key].OpenPosition;
     }
     else
     {
@@ -81,9 +81,9 @@ void URGripperController::CloseGripper()
 {
   for (TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
   {
-    if (GripperJoints.Contains(DesiredJointState.Key))
+    if (GripperControllerParameters.GripperJoints.Contains(DesiredJointState.Key))
     {
-      DesiredJointState.Value.JointPosition = GripperJoints[DesiredJointState.Key].ClosedPosition;
+      DesiredJointState.Value.JointPosition = GripperControllerParameters.GripperJoints[DesiredJointState.Key].ClosedPosition;
     }
     else
     {

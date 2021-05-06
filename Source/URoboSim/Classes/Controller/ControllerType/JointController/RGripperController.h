@@ -5,6 +5,16 @@
 #include "RGripperController.generated.h"
 // clang-format on
 
+UENUM()
+enum class UGripperState : uint8
+{
+  Normal,
+  Open,
+  Closed,
+  Grasped,
+  Stop
+};
+
 USTRUCT()
 struct FGripperInformation
 {
@@ -18,14 +28,14 @@ public:
   float ClosedPosition;
 };
 
-UENUM()
-enum class UGripperState : uint8
+USTRUCT()
+struct FRGripperControllerParameterContainer
 {
-  Normal,
-  Open,
-  Closed,
-  Grasped,
-  Stop
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  TMap<FString, FGripperInformation> GripperJoints;
 };
 
 UCLASS()
@@ -35,7 +45,7 @@ class UROBOSIM_API URGripperControllerParameter : public URJointControllerParame
 
 public:
   UPROPERTY(EditAnywhere)
-  TMap<FString, FGripperInformation> GripperJoints;
+  FRGripperControllerParameterContainer GripperControllerParameters;
 };
 
 UCLASS()
@@ -63,7 +73,6 @@ public:
   UPROPERTY(EditAnywhere)
   UGripperState GripperState = UGripperState::Normal;
 
-protected:
   UPROPERTY(EditAnywhere)
-  TMap<FString, FGripperInformation> GripperJoints;
+  FRGripperControllerParameterContainer GripperControllerParameters;
 };

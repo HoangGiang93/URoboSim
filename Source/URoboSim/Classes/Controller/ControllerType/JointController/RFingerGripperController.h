@@ -23,6 +23,16 @@ public:
   TArray<FString> FingerMeshNames;
 };
 
+USTRUCT()
+struct FRFingerGripperControllerParameterContainer
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  float GripperHitDistance = 0.5f;
+};
+
 UCLASS()
 class UROBOSIM_API URFingerGripperControllerParameter : public URGripperControllerParameter
 {
@@ -30,7 +40,7 @@ class UROBOSIM_API URFingerGripperControllerParameter : public URGripperControll
 
 public:
   UPROPERTY(EditAnywhere)
-  float GripperHitDistance = 0.5f;
+  FRFingerGripperControllerParameterContainer FingerGripperControllerParameters;
 };
 
 UCLASS()
@@ -49,7 +59,7 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  float GripperHitDistance = 0.5f;
+  FRFingerGripperControllerParameterContainer FingerGripperControllerParameters;
 
 protected:
   virtual void CheckFingerHitEvents();
