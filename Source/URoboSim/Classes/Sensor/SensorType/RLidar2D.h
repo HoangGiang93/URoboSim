@@ -21,6 +21,8 @@ public:
 
     MinimumDistance = 1.f;
     MaximumDistance = 1000.f;
+
+    LidarBodyOffset = FVector(0.f);
   }
 
 public : 

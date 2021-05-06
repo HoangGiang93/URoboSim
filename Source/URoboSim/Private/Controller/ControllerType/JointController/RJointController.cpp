@@ -4,7 +4,6 @@ DEFINE_LOG_CATEGORY_STATIC(LogRJointController, Log, All);
 
 URJointController::URJointController()
 {
-
 }
 
 void URJointController::SetControllerParameters(URControllerParameter *&ControllerParameters)
@@ -26,6 +25,7 @@ void URJointController::SetJointNames(const TArray<FString> &JointNames)
       GetOwner()->GetJoint(JointName)->SetDrive(JointControllerParameters.EnableDrive);
     }
   }
+  SetMode();
 }
 
 void URJointController::Init()
@@ -35,7 +35,6 @@ void URJointController::Init()
   bPublishResult = false;
   if (GetOwner())
   {
-    SetMode();
     if (JointControllerParameters.bControllAllJoints)
     {
       TArray<FString> JointNames;
@@ -61,29 +60,34 @@ void URJointController::SetMode()
     case UJointControllerMode::Kinematic:
       JointControllerParameters.EnableDrive.bPositionDrive = false;
       JointControllerParameters.EnableDrive.bVelocityDrive = false;
-      for (URLink *&Link : GetOwner()->GetLinks())
+      for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
       {
-        Link->DisableSimulatePhysics();
-        Link->DisableCollision();
+        if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
+        {
+          Link->DisableSimulatePhysics();
+          Link->DisableCollision();
+        }
       }
       break;
 
     case UJointControllerMode::Dynamic:
-      GetOwner()->EnableGravity.bLinks = false;
       JointControllerParameters.EnableDrive.bPositionDrive = true;
       JointControllerParameters.EnableDrive.bVelocityDrive = true;
-      if (JointControllerParameters.bDisableCollision)
+      for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
       {
-        for (URLink *&Link : GetOwner()->GetLinks())
+        if (JointControllerParameters.bDisableCollision)
         {
-          Link->DisableCollision();
+          if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
+          {
+            Link->DisableCollision();
+          }
         }
-      }
-      else
-      {
-        for (URLink *&Link : GetOwner()->GetLinks())
+        else
         {
-          Link->EnableCollision();
+          if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
+          {
+            Link->EnableCollision();
+          }
         }
       }
       break;
