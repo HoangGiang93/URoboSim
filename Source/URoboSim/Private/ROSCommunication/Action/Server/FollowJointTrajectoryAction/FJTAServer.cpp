@@ -7,19 +7,16 @@
 
 URFJTAServer::URFJTAServer()
 {
-  ActionName = TEXT("/whole_body_controller/body/follow_joint_trajectory");
-  ControllerName = TEXT("JointTrajectoryController");
-  FrameId = TEXT("odom");
-  JointParamPath = TEXT("whole_body_controller/body/joints");
+  CommonActionServerParameters.ActionName = TEXT("whole_body_controller/body/follow_joint_trajectory");
+  CommonActionServerParameters.ControllerName = TEXT("JointTrajectoryController");
 }
 
 void URFJTAServer::SetActionServerParameters(URActionServerParameter *&ActionServerParameters)
 {
-  if (URFJTAServerParameter *FJTAServerParameter = Cast<URFJTAServerParameter>(ActionServerParameters))
+  if (URFJTAServerParameter *InFJTAServerParameters = Cast<URFJTAServerParameter>(ActionServerParameters))
   {
     Super::SetActionServerParameters(ActionServerParameters);
-    FrameId = FJTAServerParameter->FrameId;
-    JointParamPath = FJTAServerParameter->JointParamPath;
+    FJTAServerParameters = InFJTAServerParameters->FJTAServerParameters;
   }
 }
 
@@ -28,9 +25,9 @@ void URFJTAServer::Init()
   Super::Init();
 
   GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
-  GetJointsClient->GetParamArguments.Name = JointParamPath;
+  GetJointsClient->GetParamClientParameters.Name = FJTAServerParameters.JointParamPath;
   GetJointsClient->Connect(Handler);
-  if (URJointTrajectoryController *JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(ControllerName)))
+  if (URJointTrajectoryController *JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(CommonActionServerParameters.ControllerName)))
   {
     JointTrajectoryController->bControllAllJoints = false;
     GetJointsClient->GetJointNames([JointTrajectoryController](const TArray<FString> &InJointNames) { JointTrajectoryController->SetJointNames(InJointNames); });
@@ -45,7 +42,7 @@ void URFJTAServer::CreateActionServer()
   GoalSubscriber = NewObject<URFJTAGoalSubscriber>(GetOwner());
   FeedbackPublisher = NewObject<URFJTAFeedbackPublisher>(GetOwner());
 
-  Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FrameId = FrameId;
-  Cast<URFJTAResultPublisher>(ResultPublisher)->FrameId = FrameId;
-  Cast<URFJTAStatusPublisher>(StatusPublisher)->FrameId = FrameId;
+  Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FeedbackPublisherParameters.FrameId = FJTAServerParameters.FrameId;
+  Cast<URFJTAResultPublisher>(ResultPublisher)->ResultPublisherParameters.FrameId = FJTAServerParameters.FrameId;
+  Cast<URFJTAStatusPublisher>(StatusPublisher)->ActionStatusPublisherParameters.FrameId = FJTAServerParameters.FrameId;
 }

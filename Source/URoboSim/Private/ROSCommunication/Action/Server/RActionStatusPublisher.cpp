@@ -5,8 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRActionStatusPublisher, Log, All)
 
 URActionStatusPublisher::URActionStatusPublisher()
 {
-  MessageType = TEXT("actionlib_msgs/GoalStatusArray");
-  FrameId = TEXT("odom");
+  CommonPublisherParameters.MessageType = TEXT("actionlib_msgs/GoalStatusArray");
 }
 
 void URActionStatusPublisher::Publish()
@@ -17,7 +16,7 @@ void URActionStatusPublisher::Publish()
     TSharedPtr<actionlib_msgs::GoalStatusArray> GoalStatusArrayMsg =
         MakeShareable(new actionlib_msgs::GoalStatusArray());
 
-    GoalStatusArrayMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), FrameId));
+    GoalStatusArrayMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), ActionStatusPublisherParameters.FrameId));
 
     TArray<actionlib_msgs::GoalStatus> GoalStatusArray;
     for (const FGoalStatusInfo &GoalStatusInfo : Controller->GetGoalStatusList())
@@ -27,7 +26,7 @@ void URActionStatusPublisher::Publish()
     }
     GoalStatusArrayMsg->SetStatusList(GoalStatusArray);
 
-    Handler->PublishMsg(Topic, GoalStatusArrayMsg);
+    Handler->PublishMsg(CommonPublisherParameters.Topic, GoalStatusArrayMsg);
     Handler->Process();
   }
   else

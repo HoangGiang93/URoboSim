@@ -5,7 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRGetJointsClient, Log, All);
 
 URGetJointsClient::URGetJointsClient() : URGetParamClient::URGetParamClient()
 {
-  GetParamArguments.Name = TEXT("hardware_interface/joints");
+  GetParamClientParameters.Name = TEXT("hardware_interface/joints");
 }
 
 void URGetJointsClient::GetJointNames(TFunction<void (const TArray<FString> &JointNames)> GetJointNamesFunction)
@@ -13,7 +13,7 @@ void URGetJointsClient::GetJointNames(TFunction<void (const TArray<FString> &Joi
   if (GetOwner())
   {
     // Create the service client
-    GetParamClient = MakeShareable<FRGetJointsClientCallback>(new FRGetJointsClientCallback(ServiceName, ServiceType, GetJointNamesFunction));
+    GetParamClient = MakeShareable<FRGetJointsClientCallback>(new FRGetJointsClientCallback(CommonServiceClientParameters.ServiceName, CommonServiceClientParameters.ServiceType, GetJointNamesFunction));
 
     FTimerHandle MyTimerHandle;
     GetOwner()->GetWorldTimerManager().SetTimer(MyTimerHandle, this, &URGetJointsClient::CallService, 1.f, false);

@@ -8,7 +8,7 @@
 // clang-format on
 
 USTRUCT()
-struct FGetParamArgument
+struct FGetParamClientParameterContainer
 {
   GENERATED_BODY()
 
@@ -28,13 +28,13 @@ class UROBOSIM_API URGetParamClientParameter : public URServiceClientParameter
 public:
   URGetParamClientParameter()
   {
-    ServiceName = TEXT("rosapi/get_param");
-    ServiceType = TEXT("rosapi/GetParam");
+    CommonServiceClientParameters.ServiceName = TEXT("rosapi/get_param");
+    CommonServiceClientParameters.ServiceType = TEXT("rosapi/GetParam");
   }
 
 public:
   UPROPERTY(EditAnywhere)
-  FGetParamArgument GetParamArguments;
+  FGetParamClientParameterContainer GetParamClientParameters;
 };
 
 UCLASS()
@@ -55,7 +55,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FGetParamArgument GetParamArguments;
+  FGetParamClientParameterContainer GetParamClientParameters;
 
   TSharedPtr<class FRGetParamClientCallback> GetParamClient;
 

@@ -5,20 +5,19 @@
 #include "ROdomPublisher.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API UROdomPublisherParameter : public URPublisherParameter
+USTRUCT()
+struct FROdomPublisherParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  UROdomPublisherParameter()
+  FROdomPublisherParameterContainer()
   {
-    Topic = TEXT("/base/joint_states");
-    MessageType = TEXT("sensor_msgs/JointState");
     FrameId = TEXT("odom");
     FrameNames.Add(TEXT("odom_x_joint"));
     FrameNames.Add(TEXT("odom_y_joint"));
     FrameNames.Add(TEXT("odom_z_joint"));
+    bProjectToGround = true;
   }
 
 public:
@@ -29,7 +28,24 @@ public:
 	TArray<FString> FrameNames;
 
   UPROPERTY(EditAnywhere)
-  bool bProjectToGround = true;
+  bool bProjectToGround;
+};
+
+UCLASS()
+class UROBOSIM_API UROdomPublisherParameter : public URPublisherParameter
+{
+  GENERATED_BODY()
+
+public:
+  UROdomPublisherParameter()
+  {
+    CommonPublisherParameters.Topic = TEXT("base/joint_states");
+    CommonPublisherParameters.MessageType = TEXT("sensor_msgs/JointState");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FROdomPublisherParameterContainer OdomPublisherParameters;
 };
 
 UCLASS()
@@ -50,18 +66,12 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId;
-
-  UPROPERTY(EditAnywhere)
-	TArray<FString> FrameNames;
+  FROdomPublisherParameterContainer OdomPublisherParameters;
 
 private:
 	void CalculateOdomStates();
 
 private:
-  UPROPERTY(EditAnywhere)
-  bool bProjectToGround = true;
-
 	TArray<double> OdomPosition;
 
 	TArray<double> OdomVelocity;

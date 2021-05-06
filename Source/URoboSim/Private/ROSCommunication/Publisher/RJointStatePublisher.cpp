@@ -15,19 +15,16 @@ static void GenerateMsg(const TMap<FString, FJointState> &JointStates, TArray<do
 
 URJointStatePublisher::URJointStatePublisher()
 {
-  Topic = TEXT("/body/joint_states");
-  MessageType = TEXT("sensor_msgs/JointState");
-  FrameId = TEXT("odom");
-  JointParamPath = TEXT("hardware_interface/joints");
+  CommonPublisherParameters.Topic = TEXT("body/joint_states");
+  CommonPublisherParameters.MessageType = TEXT("sensor_msgs/JointState");
 }
 
 void URJointStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  if (URJointStatePublisherParameter *JointStatePublisherParameters = Cast<URJointStatePublisherParameter>(PublisherParameters))
+  if (URJointStatePublisherParameter *InJointStatePublisherParameters = Cast<URJointStatePublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
-    FrameId = JointStatePublisherParameters->FrameId;
-    JointParamPath = JointStatePublisherParameters->JointParamPath;
+    JointStatePublisherParameters = InJointStatePublisherParameters->JointStatePublisherParameters;
   }
 }
 
@@ -37,7 +34,7 @@ void URJointStatePublisher::Init()
   if (GetOwner())
   {
     GetJointsClient = NewObject<URGetJointsClient>(GetOwner());
-    GetJointsClient->GetParamArguments.Name = JointParamPath;
+    GetJointsClient->GetParamClientParameters.Name = JointStatePublisherParameters.JointParamPath;
     GetJointsClient->Connect(Handler);
     GetJointsClient->GetJointNames([this](const TArray<FString> &InJointNames){ JointNames = InJointNames; });
   }
@@ -58,7 +55,7 @@ void URJointStatePublisher::Publish()
 
     static int Seq = 0;
     TSharedPtr<sensor_msgs::JointState> JointStateMsg = MakeShareable(new sensor_msgs::JointState());
-    JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), FrameId));
+    JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), JointStatePublisherParameters.FrameId));
     JointStateMsg->SetName(JointNames);
 
     TArray<double> JointPositions;
@@ -67,7 +64,7 @@ void URJointStatePublisher::Publish()
     JointStateMsg->SetPosition(JointPositions);
     JointStateMsg->SetVelocity(JointVelocities);
 
-    Handler->PublishMsg(Topic, JointStateMsg);
+    Handler->PublishMsg(CommonPublisherParameters.Topic, JointStateMsg);
 
     Handler->Process();
   }

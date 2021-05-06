@@ -3,16 +3,16 @@
 
 URGetParamClient::URGetParamClient()
 {
-  ServiceName = TEXT("rosapi/get_param");
-  ServiceType = TEXT("rosapi/GetParam");
+  CommonServiceClientParameters.ServiceName = TEXT("rosapi/get_param");
+  CommonServiceClientParameters.ServiceType = TEXT("rosapi/GetParam");
 }
 
 void URGetParamClient::SetServiceClientParameters(URServiceClientParameter *&ServiceClientParameters)
 {
-  if (URGetParamClientParameter *GetParamClientParameters = Cast<URGetParamClientParameter>(ServiceClientParameters))
+  if (URGetParamClientParameter *InGetParamClientParameters = Cast<URGetParamClientParameter>(ServiceClientParameters))
   {
     Super::SetServiceClientParameters(ServiceClientParameters);
-    GetParamArguments = GetParamClientParameters->GetParamArguments;
+    GetParamClientParameters = InGetParamClientParameters->GetParamClientParameters;
   }  
 }
 
@@ -21,7 +21,7 @@ void URGetParamClient::CreateServiceClient()
   if (GetOwner())
   {
     // Create a request instance with request parameters
-    Request = MakeShareable(new rosapi::GetParam::Request(GetParamArguments.Name, GetParamArguments.Default));
+    Request = MakeShareable(new rosapi::GetParam::Request(GetParamClientParameters.Name, GetParamClientParameters.Default));
 
     // Create an empty response instance
     Response = MakeShareable(new rosapi::GetParam::Response());

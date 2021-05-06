@@ -5,20 +5,16 @@ DEFINE_LOG_CATEGORY_STATIC(LogRLidar2DPublisher, Log, All);
 
 URLidar2DPublisher::URLidar2DPublisher()
 {
-  Topic = TEXT("/base_scan");
-  MessageType = TEXT("sensor_msgs/LaserScan");
-  LidarReferenceROSLinkName = TEXT("base_laser_link");
-  LidarName = TEXT("Laser");
+  CommonPublisherParameters.Topic = TEXT("base_scan");
+  CommonPublisherParameters.MessageType = TEXT("sensor_msgs/LaserScan");
 }
 
 void URLidar2DPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  if (URLidar2DPublisherParameter *LidarPublisherParameters = Cast<URLidar2DPublisherParameter>(PublisherParameters))
+  if (URLidar2DPublisherParameter *InLidarPublisherParameters = Cast<URLidar2DPublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
-    LidarReferenceROSLinkName = LidarPublisherParameters->LidarReferenceROSLinkName;
-    LidarName = LidarPublisherParameters->LidarName;
-    SetLidar();
+    Lidar2DPublisherParameters = InLidarPublisherParameters->Lidar2DPublisherParameters;
   }
 }
 
@@ -38,7 +34,7 @@ void URLidar2DPublisher::Publish()
     static int Seq = 0;
     static TSharedPtr<sensor_msgs::LaserScan> ScanData = MakeShareable(new sensor_msgs::LaserScan());
 
-    ScanData->SetHeader(std_msgs::Header(Seq++, FROSTime(), LidarReferenceROSLinkName));
+    ScanData->SetHeader(std_msgs::Header(Seq++, FROSTime(), Lidar2DPublisherParameters.LidarReferenceROSLinkName));
     ScanData->SetAngleMin(Lidar->ScanAngleMin);
     ScanData->SetAngleMax(Lidar->ScanAngleMax);
     ScanData->SetAngleIncrement(Lidar->AngularIncrement);
@@ -50,7 +46,7 @@ void URLidar2DPublisher::Publish()
     TArray<float> Measurements = Lidar->GetMeasuredData();
     ScanData->SetRanges(Measurements);
 
-    Handler->PublishMsg(Topic, ScanData);
+    Handler->PublishMsg(CommonPublisherParameters.Topic, ScanData);
 
     Handler->Process();
 
@@ -62,10 +58,10 @@ void URLidar2DPublisher::SetLidar()
 {
   if (GetOwner())
   {
-    Lidar = Cast<URLidar2D>(GetOwner()->GetSensor(LidarName));
+    Lidar = Cast<URLidar2D>(GetOwner()->GetSensor(Lidar2DPublisherParameters.LidarName));
     if (!Lidar)
     {
-      UE_LOG(LogRLidar2DPublisher, Error, TEXT("%s not found in %s"), *LidarName, *GetOwner()->GetName())
+      UE_LOG(LogRLidar2DPublisher, Error, TEXT("%s not found in %s"), *Lidar2DPublisherParameters.LidarName, *GetOwner()->GetName())
     }
   }
 }

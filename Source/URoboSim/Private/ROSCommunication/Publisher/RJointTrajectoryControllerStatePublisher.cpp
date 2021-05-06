@@ -6,19 +6,16 @@ DEFINE_LOG_CATEGORY_STATIC(LogRJointTrajectoryControllerStatePublisher, Log, All
 
 URJointTrajectoryControllerStatePublisher::URJointTrajectoryControllerStatePublisher()
 {
-  Topic = TEXT("/whole_body_controller/body/state");
-  MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
-  FrameId = TEXT("odom");
-  JointTrajectoryControllerName = TEXT("JointTrajectoryController");
+  CommonPublisherParameters.Topic = TEXT("whole_body_controller/body/state");
+  CommonPublisherParameters.MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
 }
 
 void URJointTrajectoryControllerStatePublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  if (URJointTrajectoryControllerStatePublisherParameter *JointTrajectoryControllerStatePublisherParameters = Cast<URJointTrajectoryControllerStatePublisherParameter>(PublisherParameters))
+  if (URJointTrajectoryControllerStatePublisherParameter *InJointTrajectoryControllerStatePublisherParameters = Cast<URJointTrajectoryControllerStatePublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
-    FrameId = JointTrajectoryControllerStatePublisherParameters->FrameId;
-    JointTrajectoryControllerName = JointTrajectoryControllerStatePublisherParameters->JointTrajectoryControllerName;
+    JointTrajectoryControllerStatePublisherParameters = InJointTrajectoryControllerStatePublisherParameters->JointTrajectoryControllerStatePublisherParameters;
   }
 }
 
@@ -27,9 +24,9 @@ void URJointTrajectoryControllerStatePublisher::Init()
   Super::Init();
   if (GetOwner())
   {
-    if (!(JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(JointTrajectoryControllerName))))
+    if (!(JointTrajectoryController = Cast<URJointTrajectoryController>(GetOwner()->GetController(JointTrajectoryControllerStatePublisherParameters.JointTrajectoryControllerName))))
     {
-      UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerName, *GetName())
+      UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerStatePublisherParameters.JointTrajectoryControllerName, *GetName())
     }
   }
 }
@@ -42,7 +39,7 @@ void URJointTrajectoryControllerStatePublisher::Publish()
     static TSharedPtr<control_msgs::JointTrajectoryControllerState> State =
         MakeShareable(new control_msgs::JointTrajectoryControllerState());
 
-    State->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
+    State->SetHeader(std_msgs::Header(Seq, FROSTime(), JointTrajectoryControllerStatePublisherParameters.FrameId));
 
     TArray<FString> JointNames;
     TArray<double> DesiredPositions;
@@ -53,9 +50,10 @@ void URJointTrajectoryControllerStatePublisher::Publish()
     TArray<double> ErrorVelocities;
     for (const TPair<FString, FJointState> &DesiredJointState : JointTrajectoryController->DesiredJointStates)
     {
-      if (URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
+      const FString JointName = DesiredJointState.Key;
+      if (URJoint *Joint = GetOwner()->GetJoint(JointName))
       {
-        JointNames.Add(Joint->GetName());
+        JointNames.Add(JointName);
 
         DesiredPositions.Add(DesiredJointState.Value.JointPosition);
         DesiredVelocities.Add(DesiredJointState.Value.JointVelocity);
@@ -85,13 +83,13 @@ void URJointTrajectoryControllerStatePublisher::Publish()
     ErrorStatesMsg.SetVelocities(ErrorVelocities);
     State->SetError(ErrorStatesMsg);
 
-    Handler->PublishMsg(Topic, State);
+    Handler->PublishMsg(CommonPublisherParameters.Topic, State);
     Handler->Process();
 
     Seq++;
   }
   else
   {
-    UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerName, *GetName())
+    UE_LOG(LogRJointTrajectoryControllerStatePublisher, Error, TEXT("%s not found in %s"), *JointTrajectoryControllerStatePublisherParameters.JointTrajectoryControllerName, *GetName())
   }
 }

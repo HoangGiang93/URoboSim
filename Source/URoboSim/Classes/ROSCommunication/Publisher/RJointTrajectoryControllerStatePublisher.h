@@ -6,16 +6,14 @@
 #include "RJointTrajectoryControllerStatePublisher.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URJointTrajectoryControllerStatePublisherParameter : public URPublisherParameter
+USTRUCT()
+struct FRJointTrajectoryControllerStatePublisherParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URJointTrajectoryControllerStatePublisherParameter()
+  FRJointTrajectoryControllerStatePublisherParameterContainer()
   {
-    Topic = TEXT("/whole_body_controller/body/state");
-    MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
     FrameId = TEXT("odom");
     JointTrajectoryControllerName = TEXT("JointTrajectoryController");
   }
@@ -26,6 +24,23 @@ public:
 
   UPROPERTY(EditAnywhere)
   FString JointTrajectoryControllerName;
+};
+
+UCLASS()
+class UROBOSIM_API URJointTrajectoryControllerStatePublisherParameter : public URPublisherParameter
+{
+  GENERATED_BODY()
+
+public:
+  URJointTrajectoryControllerStatePublisherParameter()
+  {
+    CommonPublisherParameters.Topic = TEXT("whole_body_controller/body/state");
+    CommonPublisherParameters.MessageType = TEXT("control_msgs/JointTrajectoryControllerState");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRJointTrajectoryControllerStatePublisherParameterContainer JointTrajectoryControllerStatePublisherParameters;
 };
 
 UCLASS()
@@ -46,10 +61,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId;
-
-  UPROPERTY(EditAnywhere)
-  FString JointTrajectoryControllerName;
+  FRJointTrajectoryControllerStatePublisherParameterContainer JointTrajectoryControllerStatePublisherParameters;
 
 private:
   URJointTrajectoryController *JointTrajectoryController;

@@ -6,6 +6,22 @@
 #include "FJTAFeedbackPublisher.generated.h"
 // clang-format on
 
+USTRUCT()
+struct FRFJTAFeedbackPublisherParameterContainer
+{
+  GENERATED_BODY()
+
+public:
+  FRFJTAFeedbackPublisherParameterContainer()
+  {
+    FrameId = TEXT("");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FString FrameId;
+};
+
 UCLASS()
 class UROBOSIM_API URFJTAFeedbackPublisher final : public URActionPublisher
 {
@@ -22,7 +38,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId; 
+  FRFJTAFeedbackPublisherParameterContainer FeedbackPublisherParameters; 
 
 private:
   URJointTrajectoryController *JointTrajectoryController;

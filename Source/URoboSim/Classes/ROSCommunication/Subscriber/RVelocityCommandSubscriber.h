@@ -7,6 +7,22 @@
 #include "RVelocityCommandSubscriber.generated.h"
 // clang-format on
 
+USTRUCT()
+struct FRVelocityCommandSubscriberParameterContainer
+{
+  GENERATED_BODY()
+
+public:
+  FRVelocityCommandSubscriberParameterContainer()
+  {
+    BaseControllerName = TEXT("BaseController");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FString BaseControllerName;
+};
+
 UCLASS()
 class UROBOSIM_API URVelocityCommandSubscriberParameter : public URSubscriberParameter
 {
@@ -15,14 +31,13 @@ class UROBOSIM_API URVelocityCommandSubscriberParameter : public URSubscriberPar
 public:
   URVelocityCommandSubscriberParameter()
   {
-    Topic = TEXT("/base_controller/command");
-    MessageType = TEXT("geometry_msgs/Twist");
-    BaseControllerName = TEXT("BaseController");
+    CommonSubscriberParameters.Topic = TEXT("/base_controller/command");
+    CommonSubscriberParameters.MessageType = TEXT("geometry_msgs/Twist");
   }
 
 public:
   UPROPERTY(EditAnywhere)
-  FString BaseControllerName;
+  FRVelocityCommandSubscriberParameterContainer VelocityCommandSubscriberParameters;
 };
 
 UCLASS()
@@ -41,7 +56,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString BaseControllerName;
+  FRVelocityCommandSubscriberParameterContainer VelocityCommandSubscriberParameters;
 };
 
 class UROBOSIM_API FRVelocityCommandSubscriberCallback final : public FROSBridgeSubscriber

@@ -4,8 +4,7 @@ void URServiceServer::SetServiceServerParameters(URServiceServerParameter *&Serv
 {
 	if (ServiceServerParameters)
   {
-    Name = ServiceServerParameters->Name;
-    Type = ServiceServerParameters->Type;
+    CommonServiceServerParameters = ServiceServerParameters->CommonServiceServerParameters;
   }
 }
 

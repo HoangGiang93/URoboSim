@@ -36,11 +36,6 @@ void URJointController::SetJointNames(const TArray<FString> &JointNames)
   }
 }
 
-TFunction<void (const TArray<FString> &JointNames)> URJointController::SetJointNamesFunction()
-{
-  return [this](const TArray<FString> &JointNames){ SetJointNames(JointNames); };
-}
-
 void URJointController::Init()
 {
   Super::Init();

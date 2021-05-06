@@ -6,6 +6,19 @@
 #include "RServiceServer.generated.h"
 // clang-format on
 
+USTRUCT()
+struct FRServiceServerParameterContainer
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FString ServiceName;
+
+  UPROPERTY(EditAnywhere)
+  FString ServiceType;
+};
+
 UCLASS(BlueprintType, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
 class UROBOSIM_API URServiceServerParameter : public UObject
 {
@@ -13,10 +26,7 @@ class UROBOSIM_API URServiceServerParameter : public UObject
 
 public:
   UPROPERTY(EditAnywhere)
-	FString Name;
-
-	UPROPERTY(EditAnywhere)
-	FString Type;
+	FRServiceServerParameterContainer CommonServiceServerParameters;
 };
 
 UCLASS()
@@ -29,10 +39,7 @@ public:
 
 public:
 	UPROPERTY(EditAnywhere)
-	FString Name;
-
-	UPROPERTY(VisibleAnywhere)
-	FString Type;
+	FRServiceServerParameterContainer CommonServiceServerParameters;
 
 protected:
   virtual void Init() override;

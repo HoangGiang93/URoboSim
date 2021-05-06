@@ -11,6 +11,9 @@ class UROBOSIM_API URFJTACancelSubscriber final : public URActionCancelSubscribe
 {
 	GENERATED_BODY()
 
+public:
+	URFJTACancelSubscriber();
+	
 protected:
 	void CreateSubscriber() override;
 };

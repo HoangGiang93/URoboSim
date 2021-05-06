@@ -5,5 +5,5 @@ DEFINE_LOG_CATEGORY_STATIC(LogRActionCancelSubscriber, Log, All)
 
 URActionCancelSubscriber::URActionCancelSubscriber()
 {
-  MessageType = TEXT("actionlib_msgs/GoalID");
+  CommonSubscriberParameters.MessageType = TEXT("actionlib_msgs/GoalID");
 }

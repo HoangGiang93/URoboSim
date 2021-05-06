@@ -13,7 +13,7 @@ class UROBOSIM_API URGetJointsClientParameter : public URGetParamClientParameter
 public:
   URGetJointsClientParameter()
   {
-    GetParamArguments.Name = TEXT("/hardware_interface/joints");
+    GetParamClientParameters.Name = TEXT("hardware_interface/joints");
   }
 };
 

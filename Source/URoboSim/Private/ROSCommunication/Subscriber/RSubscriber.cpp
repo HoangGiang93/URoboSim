@@ -6,8 +6,7 @@ void URSubscriber::SetSubscriberParameters(URSubscriberParameter *&SubscriberPar
 {
   if (SubscriberParameters)
   {
-    Topic = SubscriberParameters->Topic;
-    MessageType = SubscriberParameters->MessageType;
+    CommonSubscriberParameters = SubscriberParameters->CommonSubscriberParameters;
   }
 }
 

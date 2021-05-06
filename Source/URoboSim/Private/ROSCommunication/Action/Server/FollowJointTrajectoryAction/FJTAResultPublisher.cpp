@@ -6,8 +6,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRFJTAResultPublisher, Log, All);
 
 URFJTAResultPublisher::URFJTAResultPublisher()
 {
-  MessageType = TEXT("control_msgs/FollowJointTrajectoryActionResult");
-  FrameId = TEXT("odom");
+  CommonPublisherParameters.MessageType = TEXT("control_msgs/FollowJointTrajectoryActionResult");
 }
 
 void URFJTAResultPublisher::Init()
@@ -26,7 +25,7 @@ void URFJTAResultPublisher::Publish()
     TSharedPtr<control_msgs::FollowJointTrajectoryActionResult> ActionResult =
         MakeShareable(new control_msgs::FollowJointTrajectoryActionResult());
 
-    ActionResult->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
+    ActionResult->SetHeader(std_msgs::Header(Seq, FROSTime(), ResultPublisherParameters.FrameId));
 
     FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
     actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
@@ -35,7 +34,7 @@ void URFJTAResultPublisher::Publish()
     control_msgs::FollowJointTrajectoryResult Result(0);
     ActionResult->SetResult(Result);
 
-    Handler->PublishMsg(Topic, ActionResult);
+    Handler->PublishMsg(CommonPublisherParameters.Topic, ActionResult);
     Handler->Process();
 
     JointTrajectoryController->bPublishResult = false;

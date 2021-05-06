@@ -5,7 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRFJTAGoalSubscriber, Log, All)
 
 URFJTAGoalSubscriber::URFJTAGoalSubscriber()
 {
-  MessageType = TEXT("control_msgs/FollowJointTrajectoryActionGoal");
+  CommonSubscriberParameters.MessageType = TEXT("control_msgs/FollowJointTrajectoryActionGoal");
 }
 
 void URFJTAGoalSubscriber::CreateSubscriber()
@@ -13,7 +13,7 @@ void URFJTAGoalSubscriber::CreateSubscriber()
   if (Controller)
   {
     Subscriber = MakeShareable<FRFJTAGoalSubscriberCallback>(
-        new FRFJTAGoalSubscriberCallback(Topic, MessageType, Controller));
+        new FRFJTAGoalSubscriberCallback(CommonSubscriberParameters.Topic, CommonSubscriberParameters.MessageType, Controller));
   }
 }
 

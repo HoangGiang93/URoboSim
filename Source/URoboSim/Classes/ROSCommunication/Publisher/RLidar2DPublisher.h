@@ -6,16 +6,14 @@
 #include "RLidar2DPublisher.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URLidar2DPublisherParameter : public URPublisherParameter
+USTRUCT()
+struct FRLidar2DPublisherParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URLidar2DPublisherParameter()
+  FRLidar2DPublisherParameterContainer()
   {
-    Topic = TEXT("/base_scan");
-    MessageType = TEXT("sensor_msgs/LaserScan");
     LidarReferenceROSLinkName = TEXT("base_laser_link");
     LidarName = TEXT("Laser");
   }
@@ -26,6 +24,23 @@ public:
 
   UPROPERTY(EditAnywhere)
   FString LidarName;
+};
+
+UCLASS()
+class UROBOSIM_API URLidar2DPublisherParameter : public URPublisherParameter
+{
+  GENERATED_BODY()
+
+public:
+  URLidar2DPublisherParameter()
+  {
+    CommonPublisherParameters.Topic = TEXT("base_scan");
+    CommonPublisherParameters.MessageType = TEXT("sensor_msgs/LaserScan");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRLidar2DPublisherParameterContainer Lidar2DPublisherParameters;
 };
 
 UCLASS()
@@ -46,10 +61,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString LidarReferenceROSLinkName;
-
-  UPROPERTY(EditAnywhere)
-  FString LidarName;
+  FRLidar2DPublisherParameterContainer Lidar2DPublisherParameters;
 
 private:
   void SetLidar();

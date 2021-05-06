@@ -6,8 +6,8 @@
 #include "RPublisher.generated.h"
 // clang-format on
 
-UCLASS(BlueprintType, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
-class UROBOSIM_API URPublisherParameter : public UObject
+USTRUCT()
+struct FRPublisherParameterContainer
 {
   GENERATED_BODY()
 
@@ -17,6 +17,16 @@ public:
 
   UPROPERTY(VisibleAnywhere)
   FString MessageType;
+};
+
+UCLASS(BlueprintType, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
+class UROBOSIM_API URPublisherParameter : public UObject
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRPublisherParameterContainer CommonPublisherParameters;
 };
 
 UCLASS()
@@ -39,10 +49,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString Topic;
-
-  UPROPERTY(VisibleAnywhere)
-  FString MessageType;
+  FRPublisherParameterContainer CommonPublisherParameters;
 
 protected:
   TSharedPtr<FROSBridgePublisher> Publisher;

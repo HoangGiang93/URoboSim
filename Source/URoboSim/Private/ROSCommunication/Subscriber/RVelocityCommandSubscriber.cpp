@@ -6,18 +6,17 @@ DEFINE_LOG_CATEGORY_STATIC(LogRVelocityCommandSubscriber, Log, All)
 
 URVelocityCommandSubscriber::URVelocityCommandSubscriber()
 {
-  Topic = TEXT("/base_controller/command");
-  MessageType = TEXT("geometry_msgs/Twist");
-  BaseControllerName = TEXT("BaseController");
+  CommonSubscriberParameters.Topic = TEXT("/base_controller/command");
+  CommonSubscriberParameters.MessageType = TEXT("geometry_msgs/Twist");
 }
 
 void URVelocityCommandSubscriber::SetSubscriberParameters(URSubscriberParameter *&SubscriberParameters)
 {
-  URVelocityCommandSubscriberParameter *VelocityCommandSubscriberParameters = Cast<URVelocityCommandSubscriberParameter>(SubscriberParameters);
-  if (VelocityCommandSubscriberParameters)
+  URVelocityCommandSubscriberParameter *InVelocityCommandSubscriberParameters = Cast<URVelocityCommandSubscriberParameter>(SubscriberParameters);
+  if (InVelocityCommandSubscriberParameters)
   {
     Super::SetSubscriberParameters(SubscriberParameters);
-    BaseControllerName = VelocityCommandSubscriberParameters->BaseControllerName;
+    VelocityCommandSubscriberParameters = InVelocityCommandSubscriberParameters->VelocityCommandSubscriberParameters;
   }  
 }
 
@@ -26,7 +25,7 @@ void URVelocityCommandSubscriber::CreateSubscriber()
   if (GetOwner())
   {
     Subscriber = MakeShareable<FRVelocityCommandSubscriberCallback>(
-        new FRVelocityCommandSubscriberCallback(Topic, MessageType, GetOwner()->GetController(BaseControllerName)));
+        new FRVelocityCommandSubscriberCallback(CommonSubscriberParameters.Topic, CommonSubscriberParameters.MessageType, GetOwner()->GetController(VelocityCommandSubscriberParameters.BaseControllerName)));
   }
 }
 

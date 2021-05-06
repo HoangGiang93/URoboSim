@@ -6,29 +6,24 @@ DEFINE_LOG_CATEGORY_STATIC(LogROdomPublisher, Log, All);
 
 UROdomPublisher::UROdomPublisher()
 {
-  Topic = TEXT("/base/joint_states");
-  MessageType = TEXT("sensor_msgs/JointState");
-  FrameId = TEXT("odom");
-  FrameNames.Add(TEXT("odom_x_joint"));
-  FrameNames.Add(TEXT("odom_y_joint"));
-  FrameNames.Add(TEXT("odom_z_joint"));
+  CommonPublisherParameters.Topic = TEXT("base/joint_states");
+  CommonPublisherParameters.MessageType = TEXT("sensor_msgs/JointState");
 }
 
 void UROdomPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameters)
 {
-  if (UROdomPublisherParameter *OdomPublisherParameters = Cast<UROdomPublisherParameter>(PublisherParameters))
+  if (UROdomPublisherParameter *InOdomPublisherParameters = Cast<UROdomPublisherParameter>(PublisherParameters))
   {
     Super::SetPublishParameters(PublisherParameters);
-    FrameId = OdomPublisherParameters->FrameId;
-    FrameNames = OdomPublisherParameters->FrameNames;
+    OdomPublisherParameters = InOdomPublisherParameters->OdomPublisherParameters;
   }
 }
 
 void UROdomPublisher::Init()
 {
   Super::Init();
-  OdomPosition.Init(0., FrameNames.Num());
-  OdomVelocity.Init(0., FrameNames.Num());
+  OdomPosition.Init(0., OdomPublisherParameters.FrameNames.Num());
+  OdomVelocity.Init(0., OdomPublisherParameters.FrameNames.Num());
 }
 
 void UROdomPublisher::Publish()
@@ -37,13 +32,13 @@ void UROdomPublisher::Publish()
   static TSharedPtr<sensor_msgs::JointState> JointStateMsg =
       MakeShareable(new sensor_msgs::JointState());
 
-  JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), FrameId));
-  JointStateMsg->SetName(FrameNames);
+  JointStateMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), OdomPublisherParameters.FrameId));
+  JointStateMsg->SetName(OdomPublisherParameters.FrameNames);
   CalculateOdomStates();
   JointStateMsg->SetPosition(OdomPosition);
   JointStateMsg->SetVelocity(OdomVelocity);
 
-  Handler->PublishMsg(Topic, JointStateMsg);
+  Handler->PublishMsg(CommonPublisherParameters.Topic, JointStateMsg);
 
   Handler->Process();
 }

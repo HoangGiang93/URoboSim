@@ -59,8 +59,6 @@ public:
 
   void SetJointNames(const TArray<FString> &JointNames);
 
-  TFunction<void (const TArray<FString> &JointNames)> SetJointNamesFunction();
-
 public:
   UPROPERTY(EditAnywhere)
   FEnableDrive EnableDrive;

@@ -7,8 +7,7 @@ void URPublisher::SetPublishParameters(URPublisherParameter *&PublisherParameter
 {
   if (PublisherParameters)
   {
-    Topic = PublisherParameters->Topic;
-    MessageType = PublisherParameters->MessageType;
+    CommonPublisherParameters = PublisherParameters->CommonPublisherParameters;
   }
 }
 
@@ -31,5 +30,5 @@ void URPublisher::Tick()
 
 void URPublisher::CreatePublisher()
 {
-  Publisher = MakeShareable<FROSBridgePublisher>(new FROSBridgePublisher(Topic, MessageType));
+  Publisher = MakeShareable<FROSBridgePublisher>(new FROSBridgePublisher(CommonPublisherParameters.Topic, CommonPublisherParameters.MessageType));
 }

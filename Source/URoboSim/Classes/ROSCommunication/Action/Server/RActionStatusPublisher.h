@@ -5,6 +5,22 @@
 #include "RActionStatusPublisher.generated.h"
 // clang-format on
 
+USTRUCT()
+struct FRActionStatusPublisherContainer
+{
+  GENERATED_BODY()
+
+public:
+  FRActionStatusPublisherContainer()
+  {
+    FrameId = TEXT("");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FString FrameId;
+};
+
 UCLASS()
 class UROBOSIM_API URActionStatusPublisher : public URActionPublisher
 {
@@ -18,5 +34,5 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId;
+  FRActionStatusPublisherContainer ActionStatusPublisherParameters;
 };

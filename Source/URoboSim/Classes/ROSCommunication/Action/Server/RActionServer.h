@@ -7,8 +7,8 @@
 #include "RActionServer.generated.h"
 // clang-format on
 
-UCLASS(BlueprintType, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
-class UROBOSIM_API URActionServerParameter : public UObject
+USTRUCT()
+struct FRActionServerParameterContainer
 {
   GENERATED_BODY()
 
@@ -18,6 +18,16 @@ public:
 
   UPROPERTY(EditAnywhere)
   FString ControllerName;
+};
+
+UCLASS(BlueprintType, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
+class UROBOSIM_API URActionServerParameter : public UObject
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRActionServerParameterContainer CommonActionServerParameters;
 };
 
 UCLASS()
@@ -55,10 +65,7 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString ControllerName;
-
-  UPROPERTY(EditAnywhere)
-  FString ActionName;
+  FRActionServerParameterContainer CommonActionServerParameters;
 
 protected:
   virtual void Init() override;

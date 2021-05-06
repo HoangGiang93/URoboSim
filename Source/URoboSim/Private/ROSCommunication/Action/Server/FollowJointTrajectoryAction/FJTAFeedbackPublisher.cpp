@@ -6,8 +6,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogRFJTAFeedbackPublisher, Log, All)
 
 URFJTAFeedbackPublisher::URFJTAFeedbackPublisher()
 {
-  MessageType = TEXT("control_msgs/FollowJointTrajectoryActionFeedback");
-  FrameId = TEXT("odom");
+  CommonPublisherParameters.MessageType = TEXT("control_msgs/FollowJointTrajectoryActionFeedback");
 }
 
 void URFJTAFeedbackPublisher::Init()
@@ -26,7 +25,7 @@ void URFJTAFeedbackPublisher::Publish()
       TSharedPtr<control_msgs::FollowJointTrajectoryActionFeedback> Feedback =
           MakeShareable(new control_msgs::FollowJointTrajectoryActionFeedback());
 
-      Feedback->SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
+      Feedback->SetHeader(std_msgs::Header(Seq, FROSTime(), FeedbackPublisherParameters.FrameId));
 
       FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
       actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
@@ -57,7 +56,7 @@ void URFJTAFeedbackPublisher::Publish()
       }
 
       control_msgs::FollowJointTrajectoryFeedback FeedbackMsg;
-      FeedbackMsg.SetHeader(std_msgs::Header(Seq, FROSTime(), FrameId));
+      FeedbackMsg.SetHeader(std_msgs::Header(Seq, FROSTime(), FeedbackPublisherParameters.FrameId));
       FeedbackMsg.SetJointNames(JointNames);
 
       trajectory_msgs::JointTrajectoryPoint DesiredStatesMsg;
@@ -77,7 +76,7 @@ void URFJTAFeedbackPublisher::Publish()
 
       Feedback->SetFeedback(FeedbackMsg);
 
-      Handler->PublishMsg(Topic, Feedback);
+      Handler->PublishMsg(CommonPublisherParameters.Topic, Feedback);
       Handler->Process();
 
       Seq++;

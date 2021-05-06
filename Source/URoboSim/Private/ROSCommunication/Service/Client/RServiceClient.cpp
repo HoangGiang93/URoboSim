@@ -6,8 +6,7 @@ void URServiceClient::SetServiceClientParameters(URServiceClientParameter *&Serv
 {
   if (ServiceClientParameters)
   {
-    ServiceName = ServiceClientParameters->ServiceName;
-    ServiceType = ServiceClientParameters->ServiceType;
+    CommonServiceClientParameters = ServiceClientParameters->CommonServiceClientParameters;
   }
 }
 

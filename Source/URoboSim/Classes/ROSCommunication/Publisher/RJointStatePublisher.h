@@ -6,17 +6,15 @@
 #include "RJointStatePublisher.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URJointStatePublisherParameter : public URPublisherParameter
+USTRUCT()
+struct FRJointStatePublisherParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URJointStatePublisherParameter()
+  FRJointStatePublisherParameterContainer()
   {
-    Topic = TEXT("body/joint_states");
-    MessageType = TEXT("sensor_msgs/JointState");
-    FrameId = TEXT("odom");
+    FrameId = TEXT("");
     JointParamPath = TEXT("hardware_interface/joints");
   }
 
@@ -26,6 +24,23 @@ public:
 
   UPROPERTY(EditAnywhere)
   FString JointParamPath; 
+};
+
+UCLASS()
+class UROBOSIM_API URJointStatePublisherParameter : public URPublisherParameter
+{
+  GENERATED_BODY()
+
+public:
+  URJointStatePublisherParameter()
+  {
+    CommonPublisherParameters.Topic = TEXT("body/joint_states");
+    CommonPublisherParameters.MessageType = TEXT("sensor_msgs/JointState");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRJointStatePublisherParameterContainer JointStatePublisherParameters;
 };
 
 UCLASS()
@@ -48,10 +63,7 @@ protected:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId; 
-
-  UPROPERTY(EditAnywhere)
-  FString JointParamPath; 
+  FRJointStatePublisherParameterContainer JointStatePublisherParameters;
 
 private:
   URGetJointsClient *GetJointsClient;

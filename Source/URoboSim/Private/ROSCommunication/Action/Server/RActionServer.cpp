@@ -6,8 +6,7 @@ void URActionServer::SetActionServerParameters(URActionServerParameter *&ActionS
 {
   if (ActionServerParameters)
   {
-    ActionName = ActionServerParameters->ActionName;
-    ControllerName = ActionServerParameters->ControllerName;
+    CommonActionServerParameters = ActionServerParameters->CommonActionServerParameters;
   }
 }
 
@@ -16,10 +15,10 @@ void URActionServer::Init()
   CreateActionServer();
   if (GetOwner())
   {
-    URController *Controller = GetOwner()->GetController(ControllerName);
+    URController *Controller = GetOwner()->GetController(CommonActionServerParameters.ControllerName);
     if (!Controller)
     {
-      UE_LOG(LogRActionServer, Error, TEXT("%s not found in %s"), *ControllerName, *GetName())
+      UE_LOG(LogRActionServer, Error, TEXT("%s not found in %s"), *CommonActionServerParameters.ControllerName, *GetName())
       return;
     }
     
@@ -27,35 +26,35 @@ void URActionServer::Init()
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *GoalSubscriber->GetName(), *GetName())
       GoalSubscriber->SetController(Controller);
-      GoalSubscriber->Topic = ActionName + TEXT("/goal");
+      GoalSubscriber->CommonSubscriberParameters.Topic = CommonActionServerParameters.ActionName + TEXT("/goal");
       GoalSubscriber->Connect(Handler);
     }
     if (CancelSubscriber)
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *CancelSubscriber->GetName(), *GetName())
       CancelSubscriber->SetController(Controller);
-      CancelSubscriber->Topic = ActionName + TEXT("/cancel");
+      CancelSubscriber->CommonSubscriberParameters.Topic = CommonActionServerParameters.ActionName + TEXT("/cancel");
       CancelSubscriber->Connect(Handler);
     }
     if (StatusPublisher)
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *StatusPublisher->GetName(), *GetName())
       StatusPublisher->SetController(Controller);
-      StatusPublisher->Topic = ActionName + TEXT("/status");
+      StatusPublisher->CommonPublisherParameters.Topic = CommonActionServerParameters.ActionName + TEXT("/status");
       StatusPublisher->Connect(Handler);
     }
     if (FeedbackPublisher)
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *FeedbackPublisher->GetName(), *GetName())
       FeedbackPublisher->SetController(Controller);
-      FeedbackPublisher->Topic = ActionName + TEXT("/feedback");
+      FeedbackPublisher->CommonPublisherParameters.Topic = CommonActionServerParameters.ActionName + TEXT("/feedback");
       FeedbackPublisher->Connect(Handler);
     }
     if (ResultPublisher)
     {
       UE_LOG(LogRActionServer, Log, TEXT("Initialize %s of %s"), *ResultPublisher->GetName(), *GetName())
       ResultPublisher->SetController(Controller);
-      ResultPublisher->Topic = ActionName + TEXT("/result");
+      ResultPublisher->CommonPublisherParameters.Topic = CommonActionServerParameters.ActionName + TEXT("/result");
       ResultPublisher->Connect(Handler);
     }
   }

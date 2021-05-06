@@ -37,9 +37,9 @@ public:
 
   void AddGoalStatus(const FGoalStatusInfo &GoalStatus) { GoalStatusList.Add(GoalStatus); }
 
-  const FGoalStatusInfo GetGoalStatus() { return GoalStatusList.Last(); }
+  const FGoalStatusInfo GetGoalStatus() const { return GoalStatusList.Last(); }
 
-  const TArray<FGoalStatusInfo> GetGoalStatusList() { return GoalStatusList; }
+  const TArray<FGoalStatusInfo> GetGoalStatusList() const { return GoalStatusList; }
 
 public:
   bool bCancel = false;

@@ -6,18 +6,16 @@
 #include "FJTAServer.generated.h"
 // clang-format on
 
-UCLASS()
-class UROBOSIM_API URFJTAServerParameter : public URActionServerParameter
+USTRUCT()
+struct FRFJTAServerParameterContainer
 {
   GENERATED_BODY()
 
 public:
-  URFJTAServerParameter()
+  FRFJTAServerParameterContainer()
   {
-    ActionName = TEXT("/whole_body_controller/body/follow_joint_trajectory");
-    ControllerName = TEXT("JointTrajectoryController");
     FrameId = TEXT("odom");
-    JointParamPath = TEXT("/whole_body_controller/body/joints");
+    JointParamPath = TEXT("whole_body_controller/body/joints");
   }
 
 public:
@@ -26,6 +24,23 @@ public:
 
   UPROPERTY(EditAnywhere)
   FString JointParamPath; 
+};
+
+UCLASS()
+class UROBOSIM_API URFJTAServerParameter : public URActionServerParameter
+{
+  GENERATED_BODY()
+
+public:
+  URFJTAServerParameter()
+  {
+    CommonActionServerParameters.ActionName = TEXT("whole_body_controller/body/follow_joint_trajectory");
+    CommonActionServerParameters.ControllerName = TEXT("JointTrajectoryController");
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  FRFJTAServerParameterContainer FJTAServerParameters;
 };
 
 UCLASS()
@@ -41,10 +56,7 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FString FrameId; 
-
-  UPROPERTY(EditAnywhere)
-  FString JointParamPath; 
+  FRFJTAServerParameterContainer FJTAServerParameters;
 
 protected:
   void Init() override;
