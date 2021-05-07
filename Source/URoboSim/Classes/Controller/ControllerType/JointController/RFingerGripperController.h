@@ -57,6 +57,10 @@ public:
 
   virtual void GraspObject() override;
 
+  virtual void SetGripperPosition() override;
+
+  const float GetGripperPosition() const override;
+
 public:
   UPROPERTY(EditAnywhere)
   FRFingerGripperControllerParameterContainer FingerGripperControllerParameters;
@@ -64,10 +68,16 @@ public:
 protected:
   virtual void CheckFingerHitEvents();
 
+  UFUNCTION()
+  void AddHitComponent(FHitComponent HitComponent);
+
 protected:
   UPROPERTY(VisibleAnywhere)
   TArray<FFingerMesh> FingerMeshes;
 
   UPROPERTY(VisibleAnywhere)
   TMap<FString, int32> HitFingerCount;
+
+  UPROPERTY(VisibleAnywhere)
+  TArray<FHitComponent> HitComponents;
 };

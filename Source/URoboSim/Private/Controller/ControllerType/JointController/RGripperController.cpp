@@ -7,6 +7,7 @@ void URGripperController::Init()
   URController::Init();
 
   bPublishResult = false;
+  bStalled = false;
   JointControllerParameters.bControllAllJoints = false;
   if (GetOwner())
   {
@@ -31,6 +32,7 @@ void URGripperController::Tick(const float &InDeltaTime)
   switch (GripperState)
   {
     case UGripperState::Normal:
+      SetGripperPosition();
       break;
 
     case UGripperState::Stop:
@@ -47,6 +49,7 @@ void URGripperController::Tick(const float &InDeltaTime)
 
     case UGripperState::Grasped:
       GraspObject();
+      bStalled = true;
       break;
   }
 

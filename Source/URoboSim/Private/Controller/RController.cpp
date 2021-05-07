@@ -32,7 +32,7 @@ void URController::CancelAction()
 {
   if (bCancel)
   {
-    GoalStatusList.Last().Status = 2;
+    GoalStatus.Status = 2;
     bPublishResult = true;
   }
 }

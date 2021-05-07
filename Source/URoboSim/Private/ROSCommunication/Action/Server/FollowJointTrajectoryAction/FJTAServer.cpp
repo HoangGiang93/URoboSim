@@ -44,5 +44,5 @@ void URFJTAServer::CreateActionServer()
 
   Cast<URFJTAFeedbackPublisher>(FeedbackPublisher)->FeedbackPublisherParameters.FrameId = FJTAServerParameters.FrameId;
   Cast<URFJTAResultPublisher>(ResultPublisher)->ResultPublisherParameters.FrameId = FJTAServerParameters.FrameId;
-  Cast<URFJTAStatusPublisher>(StatusPublisher)->ActionStatusPublisherParameters.FrameId = FJTAServerParameters.FrameId;
+  Cast<URFJTAStatusPublisher>(StatusPublisher)->StatusPublisherParameters.FrameId = FJTAServerParameters.FrameId;
 }

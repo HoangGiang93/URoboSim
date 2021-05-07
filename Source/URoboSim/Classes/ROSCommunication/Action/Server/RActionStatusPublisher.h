@@ -34,5 +34,5 @@ public:
 
 public:
   UPROPERTY(EditAnywhere)
-  FRActionStatusPublisherContainer ActionStatusPublisherParameters;
+  FRActionStatusPublisherContainer StatusPublisherParameters;
 };

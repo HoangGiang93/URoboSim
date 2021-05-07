@@ -54,7 +54,7 @@ bool URJointTrajectoryController::CheckTrajectoryPoint()
     TrajectoryPointIndex++;
   }
 
-  GoalStatusList.Last().Status = 1;
+  GoalStatus.Status = 1;
 
   if (ActionDuration > NextTimeStep)
   {
@@ -74,7 +74,7 @@ bool URJointTrajectoryController::IsTrajectoryGoalReached()
   {
     State = UJointTrajectoryControllerState::Normal;
     bPublishResult = true;
-    GoalStatusList.Last().Status = 3;
+    GoalStatus.Status = 3;
     DesiredTrajectory.Empty();
     TrajectoryPointIndex = 0;
     return true;

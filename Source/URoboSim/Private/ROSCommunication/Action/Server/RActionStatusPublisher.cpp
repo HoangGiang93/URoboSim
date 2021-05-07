@@ -16,14 +16,12 @@ void URActionStatusPublisher::Publish()
     TSharedPtr<actionlib_msgs::GoalStatusArray> GoalStatusArrayMsg =
         MakeShareable(new actionlib_msgs::GoalStatusArray());
 
-    GoalStatusArrayMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), ActionStatusPublisherParameters.FrameId));
+    GoalStatusArrayMsg->SetHeader(std_msgs::Header(Seq++, FROSTime(), StatusPublisherParameters.FrameId));
 
     TArray<actionlib_msgs::GoalStatus> GoalStatusArray;
-    for (const FGoalStatusInfo &GoalStatusInfo : Controller->GetGoalStatusList())
-    {
-      actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
-      GoalStatusArray.Add(GoalStatus);
-    }
+    FGoalStatusInfo GoalStatusInfo = Controller->GoalStatus;
+    actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
+    GoalStatusArray.Add(GoalStatus);
     GoalStatusArrayMsg->SetStatusList(GoalStatusArray);
 
     Handler->PublishMsg(CommonPublisherParameters.Topic, GoalStatusArrayMsg);

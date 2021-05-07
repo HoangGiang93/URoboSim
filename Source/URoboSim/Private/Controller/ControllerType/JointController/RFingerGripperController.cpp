@@ -7,8 +7,9 @@ void URFingerGripperController::Init()
 {
   Super::Init();
 
-  if (GetOwner())
+  if (ARModel *Owner = GetOwner())
   {
+    Owner->NotifyHitDelegate.AddDynamic(this, &URFingerGripperController::AddHitComponent);
     for (const TPair<FString, FGripperInformation> &GripperJoint : GripperControllerParameters.GripperJoints)
     {
       URJoint *Joint = GetOwner()->GetJoint(GripperJoint.Key);
@@ -32,8 +33,44 @@ void URFingerGripperController::Init()
 
 void URFingerGripperController::Tick(const float &InDeltaTime)
 {
-  Super::Tick(InDeltaTime);
   CheckFingerHitEvents();
+  Super::Tick(InDeltaTime);
+  HitComponents.Empty();
+  HitFingerCount.Empty();
+}
+
+void URFingerGripperController::SetGripperPosition()
+{
+  for (TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
+  {
+    const FString JointName = DesiredJointState.Key;
+    if (GripperControllerParameters.GripperJoints.Contains(JointName))
+    {
+      DesiredJointState.Value.JointPosition = DesiredPosition * FMath::Sign(GripperControllerParameters.GripperJoints[JointName].OpenPosition);
+    }
+    else
+    {
+      UE_LOG(LogRFingerGripperController, Error, TEXT("%s of %s not found"), *JointName, *GetOwner()->GetName())
+    }
+  }
+}
+
+const float URFingerGripperController::GetGripperPosition() const
+{
+  float GripperPosition = 0.f;
+  for (const TPair<FString, FGripperInformation> &Gripper : GripperControllerParameters.GripperJoints)
+  {
+    const FString JointName = Gripper.Key;
+    if (const URJoint *Joint = GetOwner()->GetJoint(JointName))
+    {
+      GripperPosition += FMath::Abs(Joint->GetJointState().JointPosition);
+    }
+    else
+    {
+      UE_LOG(LogRFingerGripperController, Error, TEXT("%s of %s not found"), *JointName, *GetOwner()->GetName())
+    }
+  }
+  return GripperPosition / GripperControllerParameters.GripperJoints.Num();
 }
 
 void URFingerGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)
@@ -45,12 +82,17 @@ void URFingerGripperController::SetControllerParameters(URControllerParameter *&
   }
 }
 
+void URFingerGripperController::AddHitComponent(FHitComponent HitComponent)
+{
+  HitComponents.Add(HitComponent);
+}
+
 void URFingerGripperController::CheckFingerHitEvents()
 {
-  HitFingerCount.Empty();
   if (GetOwner())
   {
-    for (const FHitComponent &HitComponent : GetOwner()->GetHitComponents())
+    bStalled = false;
+    for (const FHitComponent &HitComponent : HitComponents)
     {
       HitFingerCount.FindOrAdd(HitComponent.OtherComponent->GetName());
       for (const FFingerMesh &FingerMesh : FingerMeshes)
@@ -61,6 +103,7 @@ void URFingerGripperController::CheckFingerHitEvents()
           if (HitFingerCount[HitComponent.OtherComponent->GetName()] == 2)
           {
             UE_LOG(LogRFingerGripperController, Log, TEXT("%s is grasped by %s"), *HitComponent.OtherComponent->GetName(), *GetOwner()->GetName())
+            bStalled = true;
             if (GripperState == UGripperState::Closed)
             {
               GripperState = UGripperState::Grasped;
@@ -70,6 +113,10 @@ void URFingerGripperController::CheckFingerHitEvents()
         }
       }
     }
+  }
+  else
+  {
+    UE_LOG(LogRFingerGripperController, Error, TEXT("Owner of %s not found"), *GetName())
   }
 }
 

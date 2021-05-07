@@ -27,7 +27,7 @@ void URFJTAResultPublisher::Publish()
 
     ActionResult->SetHeader(std_msgs::Header(Seq, FROSTime(), ResultPublisherParameters.FrameId));
 
-    FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
+    FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GoalStatus;
     actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
     ActionResult->SetStatus(GoalStatus);
 

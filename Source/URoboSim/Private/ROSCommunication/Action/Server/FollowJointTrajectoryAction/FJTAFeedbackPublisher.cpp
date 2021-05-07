@@ -27,7 +27,7 @@ void URFJTAFeedbackPublisher::Publish()
 
       Feedback->SetHeader(std_msgs::Header(Seq, FROSTime(), FeedbackPublisherParameters.FrameId));
 
-      FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GetGoalStatus();
+      FGoalStatusInfo GoalStatusInfo = JointTrajectoryController->GoalStatus;
       actionlib_msgs::GoalStatus GoalStatus(actionlib_msgs::GoalID(FROSTime(GoalStatusInfo.Secs, GoalStatusInfo.NSecs), GoalStatusInfo.Id), GoalStatusInfo.Status, TEXT(""));
       Feedback->SetStatus(GoalStatus);
 

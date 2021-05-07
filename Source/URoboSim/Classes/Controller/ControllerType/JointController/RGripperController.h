@@ -61,6 +61,8 @@ public:
   virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) override;
 
 public:
+  virtual void SetGripperPosition() {}
+
   virtual void OpenGripper();
 
   virtual void CloseGripper();
@@ -69,10 +71,21 @@ public:
 
   virtual void GraspObject() {}
 
+  virtual const float GetGripperPosition() const { return 0.f; }
+
+  const bool IsStalled() const { return bStalled; }
+  
 public:
   UPROPERTY(EditAnywhere)
   UGripperState GripperState = UGripperState::Normal;
 
   UPROPERTY(EditAnywhere)
   FRGripperControllerParameterContainer GripperControllerParameters;
+
+  UPROPERTY(EditAnywhere)
+  float DesiredPosition;
+
+protected:
+  UPROPERTY(VisibleAnywhere)
+  bool bStalled;
 };

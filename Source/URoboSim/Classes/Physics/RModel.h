@@ -22,7 +22,7 @@ public:
   FHitComponent() {}
 
   FHitComponent(UPrimitiveComponent *InMyComponent, UPrimitiveComponent *InOtherComponent)
-  : MyComponent(InMyComponent), OtherComponent(InOtherComponent) {}
+      : MyComponent(InMyComponent), OtherComponent(InOtherComponent) {}
 
   UPROPERTY(VisibleAnywhere)
   UPrimitiveComponent *MyComponent = nullptr;
@@ -46,6 +46,8 @@ public:
   bool bLinks;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNotifyHitDelegate, FHitComponent, HitComponent);
+
 UCLASS()
 class UROBOSIM_API ARModel : public AActor
 {
@@ -60,7 +62,7 @@ public:
   virtual void Tick(float DeltaTime) override;
 
   // Event when this actor bumps into a blocking object, or blocks another actor that bumps into it
-  virtual void NotifyHit(UPrimitiveComponent* MyComp, AActor* Other, UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+  virtual void NotifyHit(UPrimitiveComponent *MyComp, AActor *Other, UPrimitiveComponent *OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult &Hit) override;
 
 protected:
   // Called when the game starts or when spawned
@@ -89,7 +91,8 @@ public:
 
   class URSensor *GetSensor(const FString &SensorName) const;
 
-  TArray<FHitComponent> GetHitComponents() const { return HitComponents; };
+public:
+  FNotifyHitDelegate NotifyHitDelegate;
 
 public:
   UPROPERTY(EditAnywhere)
@@ -104,9 +107,4 @@ private:
 
   UPROPERTY(EditAnywhere)
   TArray<URPluginComponent *> Plugins;
-
-  UPROPERTY(VisibleAnywhere)
-  TArray<FHitComponent> HitComponents;
-
-  // TArray<URGraspComponent *> Grippers;
 };

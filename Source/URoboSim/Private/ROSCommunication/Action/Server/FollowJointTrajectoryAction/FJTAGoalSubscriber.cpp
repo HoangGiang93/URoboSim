@@ -46,7 +46,7 @@ void FRFJTAGoalSubscriberCallback::Callback(TSharedPtr<FROSBridgeMsg> Msg)
     actionlib_msgs::GoalID GoalID = TrajectoryMsg->GetGoalId();
     UE_LOG(LogRFJTAGoalSubscriber, Log, TEXT("%s Received Trajectory Goal ID: %s"), *FROSTime::Now().ToString(), *GoalID.GetId());
 
-    JointTrajectoryController->AddGoalStatus(FGoalStatusInfo(GoalID.GetId(), GoalID.GetStamp().Secs, GoalID.GetStamp().NSecs));
+    JointTrajectoryController->GoalStatus = FGoalStatusInfo(GoalID.GetId(), GoalID.GetStamp().Secs, GoalID.GetStamp().NSecs);
 
     FROSTime ActionStart = TrajectoryMsg->GetGoal().GetTrajectory().GetHeader().GetStamp();
 

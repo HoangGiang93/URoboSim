@@ -35,22 +35,17 @@ public:
 
   virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) {}
 
-  void AddGoalStatus(const FGoalStatusInfo &GoalStatus) { GoalStatusList.Add(GoalStatus); }
-
-  const FGoalStatusInfo GetGoalStatus() const { return GoalStatusList.Last(); }
-
-  const TArray<FGoalStatusInfo> GetGoalStatusList() const { return GoalStatusList; }
-
 public:
+  FGoalStatusInfo GoalStatus;
+
   bool bCancel = false;
 
   bool bPublishResult = false;
 
 protected:
-  TArray<FGoalStatusInfo> GoalStatusList;
-
   virtual void CancelAction();
 
+protected:
   bool bActive;
 
 private:
