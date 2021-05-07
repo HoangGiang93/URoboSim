@@ -6,7 +6,6 @@ void URGripperController::Init()
 {
   URController::Init();
 
-  bPublishResult = false;
   bStalled = false;
   JointControllerParameters.bControllAllJoints = false;
   if (GetOwner())

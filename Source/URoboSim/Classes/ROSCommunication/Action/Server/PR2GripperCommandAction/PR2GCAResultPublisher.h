@@ -31,7 +31,10 @@ public:
   URPR2GCAResultPublisher();
 
 public:
+  UFUNCTION()
   void Publish() override;
+
+  void Tick() override {}
 
 public:
   UPROPERTY(EditAnywhere)

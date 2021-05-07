@@ -13,11 +13,15 @@ void URPR2GCAResultPublisher::Init()
 {
   Super::Init();
   GripperController = Cast<URGripperController>(Controller);
+  if (GripperController)
+  {
+    GripperController->ActionFinishedDelegate.AddDynamic(this, &URPR2GCAResultPublisher::Publish);
+  }
 }
 
 void URPR2GCAResultPublisher::Publish()
 {
-  if (GetOwner() && GripperController && GripperController->bPublishResult)
+  if (Handler.IsValid() && GetOwner() && GripperController)
   {
     static int Seq = 0;
     TSharedPtr<pr2_controllers_msgs::PR2GripperCommandActionResult> ActionResult =
@@ -37,6 +41,5 @@ void URPR2GCAResultPublisher::Publish()
     Handler->Process();
 
     Seq++;
-    GripperController->bPublishResult = false;
   }
 }

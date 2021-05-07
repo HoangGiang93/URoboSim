@@ -73,10 +73,10 @@ bool URJointTrajectoryController::IsTrajectoryGoalReached()
   if (TrajectoryPointIndex == DesiredTrajectory.Num())
   {
     State = UJointTrajectoryControllerState::Normal;
-    bPublishResult = true;
     GoalStatus.Status = 3;
     DesiredTrajectory.Empty();
     TrajectoryPointIndex = 0;
+    ActionFinishedDelegate.Broadcast();
     return true;
   }
   else

@@ -33,6 +33,6 @@ void URController::CancelAction()
   if (bCancel)
   {
     GoalStatus.Status = 2;
-    bPublishResult = true;
+    ActionFinishedDelegate.Broadcast();
   }
 }

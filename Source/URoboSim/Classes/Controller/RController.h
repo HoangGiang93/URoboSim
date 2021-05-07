@@ -15,6 +15,8 @@ class UROBOSIM_API URControllerParameter : public UObject
 
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FActionFinishedDelegate);
+
 UCLASS(Blueprintable, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
 class UROBOSIM_API URController : public UObject
 {
@@ -36,11 +38,11 @@ public:
   virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) {}
 
 public:
+  FActionFinishedDelegate ActionFinishedDelegate;
+
   FGoalStatusInfo GoalStatus;
 
   bool bCancel = false;
-
-  bool bPublishResult = false;
 
 protected:
   virtual void CancelAction();

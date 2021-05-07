@@ -13,11 +13,15 @@ void URFJTAResultPublisher::Init()
 {
   Super::Init();
   JointTrajectoryController = Cast<URJointTrajectoryController>(Controller);
+  if (JointTrajectoryController)
+  {
+    JointTrajectoryController->ActionFinishedDelegate.AddDynamic(this, &URFJTAResultPublisher::Publish);
+  }
 }
 
 void URFJTAResultPublisher::Publish()
 {
-  if (JointTrajectoryController && JointTrajectoryController->bPublishResult)
+  if (Handler.IsValid() && JointTrajectoryController)
   {
     static int Seq = 0;
 
@@ -37,7 +41,6 @@ void URFJTAResultPublisher::Publish()
     Handler->PublishMsg(CommonPublisherParameters.Topic, ActionResult);
     Handler->Process();
 
-    JointTrajectoryController->bPublishResult = false;
     Seq++;
   }
 }

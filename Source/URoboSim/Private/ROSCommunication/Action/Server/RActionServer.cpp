@@ -72,14 +72,14 @@ void URActionServer::Tick()
   }
   if (StatusPublisher)
   {
-    StatusPublisher->Publish();
+    StatusPublisher->Tick();
   }
   if (FeedbackPublisher)
   {
-    FeedbackPublisher->Publish();
+    FeedbackPublisher->Tick();
   }
   if (ResultPublisher)
   {
-    ResultPublisher->Publish();
+    ResultPublisher->Tick();
   }
 }

@@ -32,7 +32,6 @@ void URJointController::Init()
 {
   Super::Init();
 
-  bPublishResult = false;
   if (GetOwner())
   {
     if (JointControllerParameters.bControllAllJoints)

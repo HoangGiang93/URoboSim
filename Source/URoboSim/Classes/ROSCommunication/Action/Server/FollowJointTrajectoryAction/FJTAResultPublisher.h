@@ -31,7 +31,10 @@ public:
   URFJTAResultPublisher();
 
 public:
+  UFUNCTION()
   void Publish() override;
+
+  void Tick() override {}
 
 protected:
   void Init() override;

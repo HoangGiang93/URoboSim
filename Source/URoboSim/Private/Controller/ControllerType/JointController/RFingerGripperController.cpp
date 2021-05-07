@@ -104,6 +104,7 @@ void URFingerGripperController::CheckFingerHitEvents()
           {
             UE_LOG(LogRFingerGripperController, Log, TEXT("%s is grasped by %s"), *HitComponent.OtherComponent->GetName(), *GetOwner()->GetName())
             bStalled = true;
+            ActionFinishedDelegate.Broadcast();
             if (GripperState == UGripperState::Closed)
             {
               GripperState = UGripperState::Grasped;
