@@ -1,4 +1,5 @@
 #include "Factory/RROSCommunicationBuilder.h"
+#include "ROSCommunication/Action/Server/PR2GripperCommandAction/PR2GCAServer.h"
 #include "ROSCommunication/Action/Server/FollowJointTrajectoryAction/FJTAServer.h"
 #include "ROSCommunication/Publisher/RLidar2DPublisher.h"
 #include "ROSCommunication/Publisher/RJointStatePublisher.h"
@@ -147,6 +148,10 @@ URActionServer *URROSCommunicationBuilder::CreateActionServer(ARModel *&InOwner,
   if (Cast<URFJTAServerParameter>(ActionServerConfiguration.ActionServerParameters))
   {
     return NewObject<URFJTAServer>(InOwner);
+  }
+  else if (Cast<URPR2GCAServerParameter>(ActionServerConfiguration.ActionServerParameters))
+  {
+    return NewObject<URPR2GCAServer>(InOwner);
   }
   else
   {

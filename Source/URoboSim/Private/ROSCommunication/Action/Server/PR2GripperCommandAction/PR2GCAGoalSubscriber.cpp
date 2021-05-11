@@ -44,6 +44,7 @@ void FRPR2GCAGoalSubscriberCallback::Callback(TSharedPtr<FROSBridgeMsg> Msg)
 
     AsyncTask(ENamedThreads::GameThread, [this, Id, Command]() {
       const float DesiredPosition = FConversions::MToCm(Command->GetGoal().GetCommand().GetPosition());
+      GripperController->GripperState = UGripperState::Active;
       GripperController->DesiredPosition = DesiredPosition;
 
       UE_LOG(LogRPR2GCAGoalSubscriber, Log, TEXT("Received GripperCommand Id: %s Goal: %f"), *Id.GetId(), DesiredPosition);

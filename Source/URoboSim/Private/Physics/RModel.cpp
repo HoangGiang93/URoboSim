@@ -74,6 +74,20 @@ URJoint *ARModel::GetJoint(const FString &JointName) const
   }
 }
 
+URLink *ARModel::GetLink(const FString &LinkName) const
+{
+  URLink *const *LinkPtr = Links.FindByPredicate([&](URLink *Link) { return Link->GetName().Equals(LinkName); });
+  if (LinkPtr)
+  {
+    return *LinkPtr;
+  }
+  else
+  {
+    UE_LOG(LogRModel, Error, TEXT("Link %s not found in %s"), *LinkName, *GetName())
+    return nullptr;
+  }
+}
+
 URLink *ARModel::GetBaseLink() const
 {
   if (Links.Num() > 0)

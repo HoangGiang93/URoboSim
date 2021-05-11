@@ -37,6 +37,32 @@ void URJoint::SetTargetState(const FJointState &TargetState)
 	SetTargetVelocity(TargetState.JointVelocity);
 }
 
+void URJoint::SetTargetPosition(const float &TargetPosition)
+{
+	static float OldTargetPosition = TargetPosition;
+	if (TargetPosition != OldTargetPosition)
+	{
+		Child->GetRootMesh()->WakeRigidBody();
+	}
+	else
+	{
+		OldTargetPosition = TargetPosition;
+	}
+}
+
+void URJoint::SetTargetVelocity(const float &TargetVelocity)
+{
+	static float OldTargetVelocity = TargetVelocity;
+	if (TargetVelocity != OldTargetVelocity)
+	{
+		Child->GetRootMesh()->WakeRigidBody();
+	}
+	else
+	{
+		OldTargetVelocity = TargetVelocity;
+	}
+}
+
 const FJointState URContinuousJoint::GetJointStateInROSUnit() const
 {
 	FJointState JointStateInROSUnit;
@@ -177,7 +203,7 @@ void URContinuousJoint::SetTargetPosition(const float &TargetPosition)
 	{
 		const FRotator TargetPositionRotator = UKismetMathLibrary::RotatorFromAxisAndAngle(Type->Axis, TargetPosition);
 		Type->Constraint->SetAngularOrientationTarget(TargetPositionRotator);
-		Child->GetRootMesh()->WakeRigidBody();
+		Super::SetTargetPosition(TargetPosition);
 	}
 	else
 	{
@@ -191,7 +217,7 @@ void URPrismaticJoint::SetTargetPosition(const float &TargetPosition)
 	{
 		const FVector TargetPositionVector = Type->Axis * -TargetPosition;
 		Type->Constraint->SetLinearPositionTarget(TargetPositionVector);
-		Child->GetRootMesh()->WakeRigidBody();
+		Super::SetTargetPosition(TargetPosition);
 	}
 	else
 	{
@@ -204,7 +230,7 @@ void URContinuousJoint::SetTargetVelocity(const float &TargetVelocity)
 	if (Child->GetRootMesh())
 	{
 		Type->Constraint->SetAngularVelocityTarget(Type->Axis * -TargetVelocity / 360.f);
-		Child->GetRootMesh()->WakeRigidBody();
+		Super::SetTargetVelocity(TargetVelocity);
 	}
 	else
 	{
@@ -217,7 +243,7 @@ void URPrismaticJoint::SetTargetVelocity(const float &TargetVelocity)
 	if (Child->GetRootMesh())
 	{
 		Type->Constraint->SetLinearVelocityTarget(Type->Axis * -TargetVelocity);
-		Child->GetRootMesh()->WakeRigidBody();
+		Super::SetTargetVelocity(TargetVelocity);
 	}
 	else
 	{

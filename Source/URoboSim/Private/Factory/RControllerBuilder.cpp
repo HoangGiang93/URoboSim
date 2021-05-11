@@ -1,5 +1,5 @@
 #include "Factory/RControllerBuilder.h"
-#include "Controller/ControllerType/BaseController/RBaseController.h"
+#include "Controller/ControllerType/BaseController/ROmniwheelController.h"
 #include "Controller/ControllerType/JointController/RJointTrajectoryController.h"
 #include "Controller/ControllerType/JointController/RFingerGripperController.h"
 
@@ -57,6 +57,10 @@ URController *URControllerBuilder::CreateController(ARModel *&InOwner, const TPa
   else if (Cast<URJointControllerParameter>(ControllerParameters.Value))
   {
     return NewObject<URJointController>(InOwner, *ControllerParameters.Key);
+  }
+  else if (Cast<UROmniwheelControllerParameter>(ControllerParameters.Value))
+  {
+    return NewObject<UROmniwheelController>(InOwner, *ControllerParameters.Key);
   }
   else if (Cast<URBaseControllerParameter>(ControllerParameters.Value))
   {

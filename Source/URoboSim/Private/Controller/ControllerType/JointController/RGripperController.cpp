@@ -34,6 +34,10 @@ void URGripperController::Tick(const float &InDeltaTime)
       SetGripperPosition();
       break;
 
+    case UGripperState::Active:
+      SetGripperPosition();
+      break;
+
     case UGripperState::Stop:
       StopGripper();
       break;

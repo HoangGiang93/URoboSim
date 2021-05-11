@@ -48,24 +48,13 @@ void FRFJTAGoalSubscriberCallback::Callback(TSharedPtr<FROSBridgeMsg> Msg)
 
     JointTrajectoryController->GoalStatus = FGoalStatusInfo(GoalID.GetId(), GoalID.GetStamp().Secs, GoalID.GetStamp().NSecs);
 
-    FROSTime ActionStart = TrajectoryMsg->GetGoal().GetTrajectory().GetHeader().GetStamp();
-
     for (const trajectory_msgs::JointTrajectoryPoint &JointPoint : TrajectoryMsg->GetGoal().GetTrajectory().GetPoints())
     {
       FROSTime TimeStep(JointPoint.GetTimeFromStart());
       JointTrajectoryController->DesiredTrajectory.Add(FTrajectoryPoints(TimeStep.Secs, TimeStep.NSecs, JointNames, JointPoint.GetPositions(), JointPoint.GetVelocities()));
     }
 
-    double ActionTimeDelay = ActionStart.GetTimeAsDouble() - FROSTime::Now().GetTimeAsDouble();
-    if (ActionTimeDelay > 0.)
-    {
-      FTimerHandle MyTimerHandle;
-      JointTrajectoryController->GetOwner()->GetWorldTimerManager().SetTimer(MyTimerHandle, JointTrajectoryController, &URJointTrajectoryController::FollowJointTrajectory, ActionTimeDelay, false);
-    }
-    else
-    {
-      JointTrajectoryController->FollowJointTrajectory();
-    }
+    JointTrajectoryController->FollowJointTrajectory();
   }
   else
   {

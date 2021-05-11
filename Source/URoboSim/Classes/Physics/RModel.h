@@ -83,6 +83,8 @@ public:
 
   TArray<URLink *> GetLinks() const { return Links; }
 
+  URLink *GetLink(const FString &LinkName) const;
+
   URLink *GetBaseLink() const;
 
   URPluginComponent *GetPlugin(const FString &PluginName) const;

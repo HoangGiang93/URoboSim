@@ -96,9 +96,9 @@ public:
 
   void SetTargetState(const FJointState &TargetState);
 
-  virtual void SetTargetPosition(const float &TargetPosition) {}
+  virtual void SetTargetPosition(const float &TargetPosition);
 
-  virtual void SetTargetVelocity(const float &TargetVelocity) {}
+  virtual void SetTargetVelocity(const float &TargetVelocity);
 
 protected:
   const FTransform GetChildPoseInJointFrame() const;
