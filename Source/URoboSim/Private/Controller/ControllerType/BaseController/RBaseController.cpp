@@ -3,6 +3,15 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogRBaseController, Log, All)
 
+void URBaseController::SetControllerParameters(URControllerParameter *&ControllerParameters)
+{
+  URBaseControllerParameter *InBaseControllerParameters = Cast<URBaseControllerParameter>(ControllerParameters);
+  if (InBaseControllerParameters)
+  {
+    BaseControllerParameters = InBaseControllerParameters->BaseControllerParameters;
+  }
+}
+
 void URBaseController::Init()
 {
   Super::Init();
@@ -15,7 +24,17 @@ void URBaseController::Init()
       BaseMesh = BaseLink->GetRootMesh();
       if (BaseMesh)
       {
-        BaseMesh->SetConstraintMode(EDOFMode::XYPlane);
+        switch (BaseControllerParameters.Mode)
+        {
+        case UBaseControllerMode::Dynamic:
+          BaseLink->bEnablePhysics = true;
+          BaseMesh->SetConstraintMode(EDOFMode::XYPlane);
+          break;
+        
+        case UBaseControllerMode::Kinematic:
+          BaseLink->bEnablePhysics = false;
+          break;
+        }
         TargetPose = BaseMesh->GetComponentTransform();
       }
     }
@@ -65,8 +84,18 @@ void URBaseController::MoveLinearTick(const float &DeltaTime)
     FVector VelocityInBaseFrame = BasePose.GetRotation().RotateVector(LinearVelocity);
     TargetPose.AddToTranslation(VelocityInBaseFrame * DeltaTime);
   }
-  // Calculate velocity in order to move from current position to the target position
-  BaseMesh->SetPhysicsLinearVelocity((TargetPose.GetLocation() - BasePose.GetLocation()) / DeltaTime);
+  
+  switch (BaseControllerParameters.Mode)
+  {
+  case UBaseControllerMode::Dynamic:
+    // Calculate velocity in order to move from current position to the target position
+    BaseMesh->SetPhysicsLinearVelocity((TargetPose.GetLocation() - BasePose.GetLocation()) / DeltaTime);
+    break;
+  
+  case UBaseControllerMode::Kinematic:
+    BaseMesh->AddWorldOffset(TargetPose.GetLocation() - BasePose.GetLocation());
+    break;
+  }
 }
 
 void URBaseController::MoveAngularTick(const float &DeltaTime)
@@ -76,5 +105,16 @@ void URBaseController::MoveAngularTick(const float &DeltaTime)
   float TargetAngle = FRotator::NormalizeAxis(TargetPose.GetRotation().Rotator().Yaw);
   float CurrentAngle = FRotator::NormalizeAxis(BasePose.GetRotation().Rotator().Yaw);
 
-  BaseMesh->SetPhysicsAngularVelocityInDegrees(FVector::UpVector * FRotator::NormalizeAxis(TargetAngle - CurrentAngle) / DeltaTime);
+  switch (BaseControllerParameters.Mode)
+  {
+  case UBaseControllerMode::Dynamic:
+    // Calculate velocity in order to move from current position to the target position
+    BaseMesh->SetPhysicsAngularVelocityInDegrees(FVector::UpVector * FRotator::NormalizeAxis(TargetAngle - CurrentAngle) / DeltaTime);
+    break;
+  
+  case UBaseControllerMode::Kinematic:
+    BaseMesh->AddWorldRotation(FRotator(0.f, FRotator::NormalizeAxis(TargetAngle - CurrentAngle), 0.f));
+    break;
+  }
+  
 }

@@ -54,42 +54,36 @@ void URJointController::SetMode()
 {
   if (GetOwner())
   {
+    bool bEnablePhysics;
     switch (JointControllerParameters.Mode)
     {
     case UJointControllerMode::Kinematic:
       JointControllerParameters.EnableDrive.bPositionDrive = false;
       JointControllerParameters.EnableDrive.bVelocityDrive = false;
-      for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
-      {
-        if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
-        {
-          Link->DisableSimulatePhysics();
-          Link->DisableCollision();
-        }
-      }
+      bEnablePhysics = false;
       break;
 
     case UJointControllerMode::Dynamic:
       JointControllerParameters.EnableDrive.bPositionDrive = true;
       JointControllerParameters.EnableDrive.bVelocityDrive = true;
-      for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
-      {
-        if (JointControllerParameters.bDisableCollision)
-        {
-          if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
-          {
-            Link->DisableCollision();
-          }
-        }
-        else
-        {
-          if (URLink *Link = GetOwner()->GetJoint(DesiredJointState.Key)->GetChild())
-          {
-            Link->EnableCollision();
-          }
-        }
-      }
+      bEnablePhysics = true;
+      GetOwner()->EnableGravity.bLinks = false;
       break;
+    }
+
+    for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
+    {
+      if(URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
+      {
+        URLink *ParentLink = Joint->GetParent();
+        URLink *ChildLink = Joint->GetChild();
+        if (ParentLink && ChildLink)
+        {
+          ChildLink->bEnablePhysics = bEnablePhysics;
+          ChildLink->bEnableCollision = !JointControllerParameters.bDisableCollision;
+        }
+        ChildLink->Init();
+      }
     }
   }
   else
@@ -100,10 +94,10 @@ void URJointController::SetMode()
 
 void URJointController::Tick(const float &InDeltaTime)
 {
-  SetTargetJointState();
+  SetDesiredJointState();
 }
 
-void URJointController::SetTargetJointState()
+void URJointController::SetDesiredJointState()
 {
   if (GetOwner())
   {

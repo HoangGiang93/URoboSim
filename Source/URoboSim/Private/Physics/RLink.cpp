@@ -12,6 +12,9 @@ URLink::URLink()
 
 void URLink::Init()
 {
+  SetGravity();
+  SetSimulatePhysics();
+  SetCollision();
 }
 
 UStaticMeshComponent *URLink::GetRootMesh() const
@@ -39,19 +42,24 @@ void URLink::SetPose(const FTransform &Pose)
   }
 }
 
-void URLink::SetEnableGravity(const bool &bGravityEnabled)
+void URLink::SetGravity()
 {
   for (UStaticMeshComponent *CollisionMesh : CollisionMeshes)
   {
-    CollisionMesh->SetEnableGravity(bGravityEnabled);
+    CollisionMesh->SetEnableGravity(bEnableGravity);
   }
 }
 
-void URLink::DisableSimulatePhysics()
+void URLink::SetSimulatePhysics()
 {
-  for (UStaticMeshComponent *CollisionMesh : CollisionMeshes)
+  if (GetRootMesh())
   {
-    CollisionMesh->SetSimulatePhysics(false);
+    USceneComponent *ParentMesh = GetRootMesh()->GetAttachParent();
+    for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
+    {
+      CollisionMesh->SetSimulatePhysics(bEnablePhysics);
+    }
+    AttachToComponent(ParentMesh);
   }
 }
 
@@ -67,31 +75,26 @@ void URLink::AttachToComponent(USceneComponent *Parent)
   }
 }
 
-void URLink::DisableCollision()
+void URLink::SetCollision()
 {
   if (GetRootMesh())
   {
-    UE_LOG(LogRLink, Log, TEXT("Disable collision for %s"), *GetName())
-    for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
+    if (bEnableCollision)
     {
-      CollisionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+      UE_LOG(LogRLink, Log, TEXT("Enable collision for %s"), *GetName())
+      for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
+      {
+        CollisionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+        CollisionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+      }
     }
-  }
-  else
-  {
-    UE_LOG(LogRLink, Error, TEXT("Link %s doesn't have any collision meshes, DisableCollision failed"), *GetName())
-  }
-}
-
-void URLink::EnableCollision()
-{
-  if (GetRootMesh())
-  {
-    UE_LOG(LogRLink, Log, TEXT("Enable collision for %s"), *GetName())
-    for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
+    else
     {
-      CollisionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-      CollisionMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Ignore);
+      UE_LOG(LogRLink, Log, TEXT("Disable collision for %s"), *GetName())
+      for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
+      {
+        CollisionMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+      }
     }
   }
   else

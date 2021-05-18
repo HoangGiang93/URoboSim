@@ -43,7 +43,7 @@ void ARModel::Init()
   UE_LOG(LogRModel, Log, TEXT("Model %s initializes with %i plugins"), *GetName(), Plugins.Num())
   if (Links.Num() > 0)
   {
-    Links[0]->SetEnableGravity(EnableGravity.bBase);
+    Links[0]->bEnableGravity = EnableGravity.bBase;
   }
   else
   {
@@ -51,12 +51,17 @@ void ARModel::Init()
   }
   for (URJoint *&Joint : Joints)
   {
-    Joint->GetChild()->SetEnableGravity(EnableGravity.bLinks);
+    Joint->GetChild()->bEnableGravity = EnableGravity.bLinks;
     Joint->Init();
   }
   for (URLink *&Link : Links)
   {
     Link->Init();
+  }
+  for (URJoint *&Joint : Joints)
+  {
+    Joint->GetChild()->bEnableGravity = EnableGravity.bLinks;
+    Joint->Init();
   }
 }
 

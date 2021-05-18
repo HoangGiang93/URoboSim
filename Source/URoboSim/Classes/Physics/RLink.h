@@ -37,13 +37,25 @@ public:
 
 	void AttachToComponent(USceneComponent *Parent);
 
-	void SetEnableGravity(const bool &bGravityEnabled);
+	/**
+	 * Set physics of the link (disable to neglect oscillate when using kinematic control, enable to move link using dynamic control)
+	 * Attention: This function would detach the link from the parent component, so please attach the parent again after this function
+	 */
+	void SetSimulatePhysics();
 
-	void DisableSimulatePhysics();
+	void SetCollision();
 
-	void DisableCollision();
+	void SetGravity();
 
-	void EnableCollision();
+public:
+	UPROPERTY(EditAnywhere)
+	bool bEnableCollision = true;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnablePhysics = true;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableGravity = true;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

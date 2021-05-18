@@ -84,7 +84,7 @@ void URJointBuilder::SetJointParameters(USDFJoint *&SDFJoint)
 void URJointBuilder::CreateConstraint(USDFJoint *&SDFJoint)
 {
   UPhysicsConstraintComponent *Constraint;
-  Constraint = NewObject<UPhysicsConstraintComponent>(Joint, *(SDFJoint->GetName() + TEXT("_constraint")));
+  Constraint = NewObject<UPhysicsConstraintComponent>(Joint);
   Constraint->ConstraintInstance.SetDisableCollision(true);
   Constraint->ConstraintInstance.SetLinearXLimit(ELinearConstraintMotion::LCM_Locked, 0.f);
   Constraint->ConstraintInstance.SetLinearYLimit(ELinearConstraintMotion::LCM_Locked, 0.f);

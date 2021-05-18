@@ -76,5 +76,5 @@ public:
 protected:
   void SetMode();
 
-  void SetTargetJointState();
+  void SetDesiredJointState();
 };

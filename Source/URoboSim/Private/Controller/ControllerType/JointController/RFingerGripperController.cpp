@@ -49,10 +49,9 @@ void URFingerGripperController::SetGripperPosition()
       const float FingerDesiredPosition = DesiredPosition * FMath::Sign(GripperControllerParameters.GripperJoints[JointName].OpenPosition);
       DesiredJointState.Value.JointPosition = FingerDesiredPosition;
       float Error = FMath::Abs(FingerDesiredPosition - GetOwner()->GetJoint(JointName)->GetJointState().JointPosition);
-      if (Error < 1E-1 && GripperState == UGripperState::Active)
+      if (Error < 1E-1)
       {
         ActionFinishedDelegate.Broadcast();
-        GripperState = UGripperState::Normal;
       }
     }
     else

@@ -36,7 +36,7 @@ void URTFPublisher::Init()
       {
         UE_LOG(LogRTFPublisher, Log, TEXT("Add %s to %s"), *ObjectName, *GetName())
         AddObject(Actor);
-        break;
+        continue;
       }
     }
     UE_LOG(LogRTFPublisher, Error, TEXT("%s not found"), *ObjectName)

@@ -8,11 +8,37 @@
 #include "RBaseController.generated.h"
 // clang-format on
 
+UENUM()
+enum class UBaseControllerMode : uint8
+{
+  Dynamic,
+  Kinematic
+};
+
+USTRUCT()
+struct FRBaseControllerParameterContainer
+{
+  GENERATED_BODY()
+
+public:
+  FRBaseControllerParameterContainer()
+  {
+    Mode = UBaseControllerMode::Dynamic;
+  }
+
+public:
+  UPROPERTY(EditAnywhere)
+  UBaseControllerMode Mode;
+};
+
 UCLASS()
 class UROBOSIM_API URBaseControllerParameter : public URControllerParameter
 {
   GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere)
+  FRBaseControllerParameterContainer BaseControllerParameters;
 };
 
 UCLASS(Blueprintable, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
@@ -25,6 +51,8 @@ public:
 
 	virtual void Init() override;
 
+	virtual void SetControllerParameters(URControllerParameter *&ControllerParameters) override;
+
 public:
 	virtual void MoveLinear(const FVector &InVelocity);
 
@@ -34,6 +62,10 @@ protected:
 	virtual void MoveAngularTick(const float &InDeltaTime);
 
 	virtual void MoveLinearTick(const float &InDeltaTime);
+
+public:
+	UPROPERTY(EditAnywhere)
+  FRBaseControllerParameterContainer BaseControllerParameters;
 
 protected:
   UStaticMeshComponent *BaseMesh;

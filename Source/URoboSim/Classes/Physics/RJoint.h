@@ -103,6 +103,8 @@ public:
 protected:
   const FTransform GetChildPoseInJointFrame() const;
 
+  const FTransform GetDeltaPoseInJointFrame() const;
+
   virtual const float GetPosition() const { return 0.f; }
 
   virtual const float GetVelocity() const { return 0.f; }
@@ -121,6 +123,12 @@ protected:
 protected:
   UPROPERTY(VisibleAnywhere)
   FTransform InitChildPoseInJointFrame;
+
+  UPROPERTY(VisibleAnywhere)
+  FTransform InitChildMeshPoseInParentMeshFrame;
+
+  UPROPERTY(VisibleAnywhere)
+  FVector JointAxisInChildMeshFrame;
 
   UPROPERTY(VisibleAnywhere)
   FJointState JointState;

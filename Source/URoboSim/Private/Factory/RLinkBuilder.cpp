@@ -120,9 +120,9 @@ void URLinkBuilder::SetCollisionMeshes(USDFLink *&SDFLink)
 
 void URLinkBuilder::SetInertial(USDFLinkInertial *&InInertial)
 {
-  if (Link->GetRootMesh())
+  if (UStaticMeshComponent *Mesh = Link->GetRootMesh())
   {
-    Link->GetRootMesh()->SetMassOverrideInKg(NAME_None, InInertial->Mass, true);
+    Mesh->SetMassOverrideInKg(NAME_None, InInertial->Mass, true);
   }
 }
 

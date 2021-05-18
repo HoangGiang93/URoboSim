@@ -1,4 +1,7 @@
 #include "Controller/ControllerType/BaseController/ROmniwheelController.h"
+#include "Kismet/KismetMathLibrary.h"
+
+DEFINE_LOG_CATEGORY_STATIC(LogROmniwheelController, Log, All)
 
 UROmniwheelController::UROmniwheelController()
 {
@@ -42,7 +45,7 @@ void UROmniwheelController::MoveWheelTick(const float &InDeltaTime)
     }
     else
     {
-      UE_LOG(LogTemp, Error, TEXT("%s can not find omni wheels in %s"), *GetName(), *GetOwner()->GetName())
+      UE_LOG(LogROmniwheelController, Error, TEXT("Omniwheels in %s not found"), *GetOwner()->GetName())
     }
   }
 }

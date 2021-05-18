@@ -99,8 +99,5 @@ protected:
 
   bool IsTrajectoryGoalReached();
 
-  void SetDesiredJointState();
-
-private:
-  FTrajectoryPoints LastTrajectoryPoints;
+  void CalculateDesiredJointState();
 };

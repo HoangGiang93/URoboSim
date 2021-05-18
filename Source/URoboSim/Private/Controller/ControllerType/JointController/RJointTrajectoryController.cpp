@@ -18,14 +18,6 @@ void URJointTrajectoryController::Reset()
 void URJointTrajectoryController::FollowJointTrajectory()
 {
   TrajectoryPointIndex = 0;
-  LastTrajectoryPoints.Reset();
-  for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
-  {
-    if (URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
-    {
-      LastTrajectoryPoints.JointStates.Add(Joint->GetName(), Joint->GetJointStateInROSUnit());
-    }
-  }
   ActionStartTime = GetOwner()->GetGameTimeSinceCreation();
   State = UJointTrajectoryControllerState::FollowJointTrajectory;
 }
@@ -39,10 +31,10 @@ void URJointTrajectoryController::Tick(const float &InDeltaTime)
       ActionDuration = GetOwner()->GetGameTimeSinceCreation() - ActionStartTime;
       if (!CheckTrajectoryPoint() || !IsTrajectoryGoalReached())
       {
-        SetDesiredJointState();
+        CalculateDesiredJointState();
       }
     }
-    SetTargetJointState();
+    SetDesiredJointState();
   }
 }
 
@@ -58,7 +50,6 @@ bool URJointTrajectoryController::CheckTrajectoryPoint()
 
   if (ActionDuration > NextTimeStep)
   {
-    LastTrajectoryPoints = DesiredTrajectory[TrajectoryPointIndex];
     TrajectoryPointIndex++;
     return true;
   }
@@ -85,12 +76,12 @@ bool URJointTrajectoryController::IsTrajectoryGoalReached()
   }
 }
 
-void URJointTrajectoryController::SetDesiredJointState()
+void URJointTrajectoryController::CalculateDesiredJointState()
 {
   if (State == UJointTrajectoryControllerState::FollowJointTrajectory)
   {
     float NextTimeStep = DesiredTrajectory[TrajectoryPointIndex].GetTimeAsFloat();
-    float LastTimeStep = LastTrajectoryPoints.GetTimeAsFloat();
+    float LastTimeStep = DesiredTrajectory[TrajectoryPointIndex-1].GetTimeAsFloat();
     float CurrentTimeStep = ActionDuration;
     float DiffTrajectoryTimeStep = NextTimeStep - LastTimeStep;
 
@@ -109,12 +100,12 @@ void URJointTrajectoryController::SetDesiredJointState()
     for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
     {
       const FString JointName = DesiredJointState.Key;
-      if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName) && LastTrajectoryPoints.JointStates.Contains(JointName) && DesiredJointStates.Contains(JointName))
+      if (DesiredTrajectory[TrajectoryPointIndex].JointStates.Contains(JointName) && DesiredTrajectory[TrajectoryPointIndex-1].JointStates.Contains(JointName) && DesiredJointStates.Contains(JointName))
       {
-        float DiffJointPosition = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointPosition - LastTrajectoryPoints.JointStates[JointName].JointPosition;
-        float DesiredJointPosition = DiffJointPosition / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointPosition;
-        float DiffJointVelocity = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointVelocity - LastTrajectoryPoints.JointStates[JointName].JointVelocity;
-        float DesiredJointVelocity = DiffJointVelocity / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + LastTrajectoryPoints.JointStates[JointName].JointVelocity;
+        float DiffJointPosition = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointPosition - DesiredTrajectory[TrajectoryPointIndex-1].JointStates[JointName].JointPosition;
+        float DesiredJointPosition = DiffJointPosition / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + DesiredTrajectory[TrajectoryPointIndex-1].JointStates[JointName].JointPosition;
+        float DiffJointVelocity = DesiredTrajectory[TrajectoryPointIndex].JointStates[JointName].JointVelocity - DesiredTrajectory[TrajectoryPointIndex-1].JointStates[JointName].JointVelocity;
+        float DesiredJointVelocity = DiffJointVelocity / DiffTrajectoryTimeStep * (CurrentTimeStep - LastTimeStep) + DesiredTrajectory[TrajectoryPointIndex-1].JointStates[JointName].JointVelocity;
 
         if (GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("revolute") || GetOwner()->GetJoint(JointName)->GetType()->GetName().Equals("continuous"))
         {
