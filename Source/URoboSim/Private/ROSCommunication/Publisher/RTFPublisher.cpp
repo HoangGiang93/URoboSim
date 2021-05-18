@@ -34,12 +34,15 @@ void URTFPublisher::Init()
     {
       if (Actor->GetName().Contains(ObjectName))
       {
-        UE_LOG(LogRTFPublisher, Log, TEXT("Add %s to %s"), *ObjectName, *GetName())
+        UE_LOG(LogRTFPublisher, Log, TEXT("Add %s to %s"), *Actor->GetName(), *GetName())
         AddObject(Actor);
         continue;
       }
     }
-    UE_LOG(LogRTFPublisher, Error, TEXT("%s not found"), *ObjectName)
+    if (!Objects.FindByPredicate([ObjectName](AActor *&Actor){ return Actor->GetName().Contains(ObjectName); }))
+    {
+      UE_LOG(LogRTFPublisher, Error, TEXT("%s not found"), *ObjectName)
+    }
   }
 }
 

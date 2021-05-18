@@ -13,7 +13,6 @@ URLink::URLink()
 void URLink::Init()
 {
   SetGravity();
-  SetSimulatePhysics();
   SetCollision();
 }
 
@@ -50,14 +49,17 @@ void URLink::SetGravity()
   }
 }
 
-void URLink::SetSimulatePhysics()
+void URLink::DisableSimulatePhysics()
 {
+  // Attention: 
+  // a) SetSimulatePhysics(bEnablePhysics) would detach the link from the parent component, so it should be attached again
+  // b) SetSimulatePhysics(true) would break collision, so don't use it
   if (GetRootMesh())
   {
     USceneComponent *ParentMesh = GetRootMesh()->GetAttachParent();
     for (UStaticMeshComponent *&CollisionMesh : CollisionMeshes)
     {
-      CollisionMesh->SetSimulatePhysics(bEnablePhysics);
+      CollisionMesh->SetSimulatePhysics(false);
     }
     AttachToComponent(ParentMesh);
   }

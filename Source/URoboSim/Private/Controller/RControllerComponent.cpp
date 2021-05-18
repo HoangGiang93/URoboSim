@@ -16,7 +16,6 @@ void URControllerComponent::Init()
     {   
       Controller->Init();
     }
-    Owner->Init();
   }
 }
 

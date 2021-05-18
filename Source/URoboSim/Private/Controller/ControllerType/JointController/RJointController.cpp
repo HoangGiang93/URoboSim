@@ -34,6 +34,7 @@ void URJointController::Init()
 
   if (GetOwner())
   {
+    GetOwner()->EnableGravity.bLinks = false;
     if (JointControllerParameters.bControllAllJoints)
     {
       TArray<FString> JointNames;
@@ -43,6 +44,7 @@ void URJointController::Init()
       }
       SetJointNames(JointNames);
     }
+    GetOwner()->Init();
   }
   else
   {
@@ -54,36 +56,30 @@ void URJointController::SetMode()
 {
   if (GetOwner())
   {
-    bool bEnablePhysics;
     switch (JointControllerParameters.Mode)
     {
     case UJointControllerMode::Kinematic:
       JointControllerParameters.EnableDrive.bPositionDrive = false;
       JointControllerParameters.EnableDrive.bVelocityDrive = false;
-      bEnablePhysics = false;
+      for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
+      {
+        if(URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
+        {
+          URLink *ParentLink = Joint->GetParent();
+          URLink *ChildLink = Joint->GetChild();
+          if (ParentLink && ChildLink)
+          {
+            ChildLink->bEnableCollision = !JointControllerParameters.bDisableCollision;
+          }
+          ChildLink->DisableSimulatePhysics();
+        }
+      }
       break;
 
     case UJointControllerMode::Dynamic:
       JointControllerParameters.EnableDrive.bPositionDrive = true;
       JointControllerParameters.EnableDrive.bVelocityDrive = true;
-      bEnablePhysics = true;
-      GetOwner()->EnableGravity.bLinks = false;
       break;
-    }
-
-    for (const TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
-    {
-      if(URJoint *Joint = GetOwner()->GetJoint(DesiredJointState.Key))
-      {
-        URLink *ParentLink = Joint->GetParent();
-        URLink *ChildLink = Joint->GetChild();
-        if (ParentLink && ChildLink)
-        {
-          ChildLink->bEnablePhysics = bEnablePhysics;
-          ChildLink->bEnableCollision = !JointControllerParameters.bDisableCollision;
-        }
-        ChildLink->Init();
-      }
     }
   }
   else

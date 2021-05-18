@@ -9,6 +9,10 @@ DEFINE_LOG_CATEGORY_STATIC(LogRJoint, Log, All);
 
 void URJoint::Tick(float DeltaTime)
 {
+	if (!Child->GetRootMesh()->GetAttachParent())
+	{
+		Child->AttachToComponent(Parent->GetRootMesh());
+	}
 	JointState.JointVelocity = GetVelocity();
 	JointState.JointPosition = GetPosition();
 }

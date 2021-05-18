@@ -27,12 +27,11 @@ void URBaseController::Init()
         switch (BaseControllerParameters.Mode)
         {
         case UBaseControllerMode::Dynamic:
-          BaseLink->bEnablePhysics = true;
           BaseMesh->SetConstraintMode(EDOFMode::XYPlane);
           break;
         
         case UBaseControllerMode::Kinematic:
-          BaseLink->bEnablePhysics = false;
+          BaseLink->DisableSimulatePhysics();
           break;
         }
         TargetPose = BaseMesh->GetComponentTransform();
