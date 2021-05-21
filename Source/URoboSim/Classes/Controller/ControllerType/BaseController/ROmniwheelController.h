@@ -15,30 +15,32 @@ struct FWheelSetting
 public:
 	FWheelSetting()
 	{
-		WheelVelocities.Init(0.0, 4);
+		WheelRadius = 10.f;
+		WheelToCenterSum = 70.65f;
+		WheelFrontLeft = FString(TEXT("wheel_front_left"));
+		WheelFrontRight = FString(TEXT("wheel_front_right"));
+		WheelBackLeft = FString(TEXT("wheel_back_left"));
+		WheelBackRight = FString(TEXT("wheel_back_right"));
 	}
 	
 public:
   UPROPERTY(EditAnywhere)
-	float WheelRadius = 10.f;
+	float WheelRadius;
 
 	UPROPERTY(EditAnywhere)
-	float WheelToCenterSum = 70.65f;
+	float WheelToCenterSum;
 
 	UPROPERTY(EditAnywhere)
-	FString WheelFrontLeft = FString(TEXT("wheel_front_left"));
+	FString WheelFrontLeft;
 
 	UPROPERTY(EditAnywhere)
-	FString WheelFrontRight = FString(TEXT("wheel_front_right"));
+	FString WheelFrontRight;
 
 	UPROPERTY(EditAnywhere)
-	FString WheelBackLeft = FString(TEXT("wheel_back_left"));
+	FString WheelBackLeft;
 
 	UPROPERTY(EditAnywhere)
-	FString WheelBackRight = FString(TEXT("wheel_back_right"));
-
-  UPROPERTY(VisibleAnywhere)
-  TArray<double> WheelVelocities;
+	FString WheelBackRight;
 };
 
 UCLASS()
@@ -63,10 +65,14 @@ public:
 
   virtual void Tick(const float &InDeltaTime) override;
 
-protected:
-
-  UPROPERTY(EditAnywhere)
+public:
+	UPROPERTY(EditAnywhere)
 	FWheelSetting WheelSetting;
 
+protected:
 	virtual void MoveWheelTick(const float &InDeltaTime);
+
+protected:
+	UPROPERTY(VisibleAnywhere)
+  TArray<double> WheelVelocities;
 };

@@ -4,15 +4,6 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogRJointStatePublisher, Log, All);
 
-static void GenerateMsg(const TMap<FString, FJointState> &JointStates, TArray<double> &JointPositions, TArray<double> &JointVelocities)
-{
-  for (const TPair<FString, FJointState> &JointState : JointStates)
-  {
-    JointPositions.Add(JointState.Value.JointPosition);
-    JointVelocities.Add(JointState.Value.JointVelocity);
-  }
-}
-
 URJointStatePublisher::URJointStatePublisher()
 {
   CommonPublisherParameters.Topic = TEXT("body/joint_states");
@@ -60,7 +51,14 @@ void URJointStatePublisher::Publish()
 
     TArray<double> JointPositions;
     TArray<double> JointVelocities;
-    GenerateMsg(JointStates, JointPositions, JointVelocities);
+    for (const FString &JointName : JointNames)
+    {
+      if (JointStates.Contains(JointName))
+      {
+        JointPositions.Add(JointStates[JointName].JointPosition);
+        JointVelocities.Add(JointStates[JointName].JointVelocity);
+      }
+    }
     JointStateMsg->SetPosition(JointPositions);
     JointStateMsg->SetVelocity(JointVelocities);
 

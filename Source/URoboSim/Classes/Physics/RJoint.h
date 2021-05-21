@@ -125,6 +125,9 @@ protected:
   FTransform InitChildPoseInJointFrame;
 
   UPROPERTY(VisibleAnywhere)
+  FTransform InitChildMeshPoseInJointFrame;
+
+  UPROPERTY(VisibleAnywhere)
   FTransform InitChildMeshPoseInParentMeshFrame;
 
   UPROPERTY(VisibleAnywhere)

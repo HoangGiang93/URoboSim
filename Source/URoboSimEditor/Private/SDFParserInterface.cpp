@@ -59,7 +59,7 @@ void ISDFParserInterface::ParseModel(const FXmlNode *InNode)
   const FString Name = InNode->GetAttribute(TEXT("name"));
   if (!Name.IsEmpty())
   {
-    NewModel = NewObject<USDFModel>(DataAsset, FName(*Name));
+    NewModel = NewObject<USDFModel>(DataAsset, *Name);
   }
   else
   {
@@ -112,7 +112,7 @@ void ISDFParserInterface::ParseLink(const FXmlNode *InNode, USDFModel *&OutModel
   const FString Name = InNode->GetAttribute(TEXT("name"));
   if (!Name.IsEmpty())
   {
-    NewLink = NewObject<USDFLink>(OutModel, FName(*Name));
+    NewLink = NewObject<USDFLink>(OutModel, *Name);
   }
   else
   {
@@ -237,7 +237,7 @@ void ISDFParserInterface::ParseVisual(const FXmlNode *InNode, USDFLink *&OutLink
   const FString Name = InNode->GetAttribute(TEXT("name"));
   if (!Name.IsEmpty())
   {
-    NewVisual = NewObject<USDFVisual>(OutLink, FName(*Name));
+    NewVisual = NewObject<USDFVisual>(OutLink, *Name);
   }
   else
   {
@@ -278,7 +278,7 @@ void ISDFParserInterface::ParseCollision(const FXmlNode *InNode, USDFLink *&OutL
   const FString Name = InNode->GetAttribute(TEXT("name"));
   if (!Name.IsEmpty())
   {
-    NewCollision = NewObject<USDFCollision>(OutLink, FName(*Name));
+    NewCollision = NewObject<USDFCollision>(OutLink, *Name);
   }
   else
   {
@@ -457,7 +457,7 @@ void ISDFParserInterface::ParseJoint(const FXmlNode *InNode, USDFModel *&OutMode
   const FString Name = InNode->GetAttribute(TEXT("name"));
   if (!Name.IsEmpty())
   {
-    NewJoint = NewObject<USDFJoint>(OutModel, FName(*Name));
+    NewJoint = NewObject<USDFJoint>(OutModel, *Name);
   }
   else
   {

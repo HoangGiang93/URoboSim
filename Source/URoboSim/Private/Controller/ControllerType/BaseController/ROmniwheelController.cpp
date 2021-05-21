@@ -5,6 +5,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogROmniwheelController, Log, All)
 
 UROmniwheelController::UROmniwheelController()
 {
+  WheelVelocities.Init(0.0, 4);
 }
 
 void UROmniwheelController::SetControllerParameters(URControllerParameter *&ControllerParameters)
@@ -32,16 +33,16 @@ void UROmniwheelController::MoveWheelTick(const float &InDeltaTime)
         GetOwner()->GetLink(WheelSetting.WheelFrontRight) &&
         GetOwner()->GetLink(WheelSetting.WheelBackRight))
     {
-      WheelSetting.WheelVelocities[0] = (LinearVelocity.X * 100 + LinearVelocity.Y * 100 + WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
-      WheelSetting.WheelVelocities[1] = (LinearVelocity.X * 100 - LinearVelocity.Y * 100 - WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
-      WheelSetting.WheelVelocities[2] = (LinearVelocity.X * 100 - LinearVelocity.Y * 100 + WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
-      WheelSetting.WheelVelocities[3] = (LinearVelocity.X * 100 + LinearVelocity.Y * 100 - WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
+      WheelVelocities[0] = (LinearVelocity.X * 100 + LinearVelocity.Y * 100 + WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
+      WheelVelocities[1] = (LinearVelocity.X * 100 - LinearVelocity.Y * 100 - WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
+      WheelVelocities[2] = (LinearVelocity.X * 100 - LinearVelocity.Y * 100 + WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
+      WheelVelocities[3] = (LinearVelocity.X * 100 + LinearVelocity.Y * 100 - WheelSetting.WheelToCenterSum * AngularVelocity) / WheelSetting.WheelRadius;
 
       FVector RotationAxis = GetOwner()->GetBaseLink()->GetRootMesh()->GetComponentQuat().GetAxisY();
-      GetOwner()->GetLink(WheelSetting.WheelFrontLeft)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelSetting.WheelVelocities[0]);
-      GetOwner()->GetLink(WheelSetting.WheelFrontRight)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelSetting.WheelVelocities[1]);
-      GetOwner()->GetLink(WheelSetting.WheelBackLeft)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelSetting.WheelVelocities[2]);
-      GetOwner()->GetLink(WheelSetting.WheelBackRight)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelSetting.WheelVelocities[3]);
+      GetOwner()->GetLink(WheelSetting.WheelFrontLeft)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelVelocities[0]);
+      GetOwner()->GetLink(WheelSetting.WheelFrontRight)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelVelocities[1]);
+      GetOwner()->GetLink(WheelSetting.WheelBackLeft)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelVelocities[2]);
+      GetOwner()->GetLink(WheelSetting.WheelBackRight)->GetRootMesh()->SetPhysicsAngularVelocityInDegrees(RotationAxis * WheelVelocities[3]);
     }
     else
     {
