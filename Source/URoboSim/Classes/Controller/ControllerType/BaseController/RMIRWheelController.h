@@ -81,7 +81,7 @@ public:
 	FMIRWheelSetting WheelSetting;
 };
 
-UCLASS(Blueprintable, DefaultToInstanced, collapsecategories, hidecategories = Object, editinlinenew)
+UCLASS()
 class UROBOSIM_API URMIRWheelController : public URBaseController
 {
   GENERATED_BODY()

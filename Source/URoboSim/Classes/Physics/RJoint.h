@@ -76,6 +76,8 @@ public:
 
   void SetJointAxis(const FVector &InJointAxis) { Type->Axis = InJointAxis; }
 
+  void SetOffsetPosition(const float &InOffsetPosition) { OffsetPosition = InOffsetPosition; }
+
   URLink *GetParent() const { return Parent; }
 
   URLink *GetChild() const { return Child; }
@@ -128,13 +130,10 @@ protected:
   FTransform InitChildMeshPoseInJointFrame;
 
   UPROPERTY(VisibleAnywhere)
-  FTransform InitChildMeshPoseInParentMeshFrame;
-
-  UPROPERTY(VisibleAnywhere)
-  FVector JointAxisInChildMeshFrame;
-
-  UPROPERTY(VisibleAnywhere)
   FJointState JointState;
+
+  UPROPERTY(VisibleAnywhere)
+  float OffsetPosition;
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))

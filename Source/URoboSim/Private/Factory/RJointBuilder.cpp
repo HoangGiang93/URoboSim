@@ -119,25 +119,22 @@ void URContinuousJointBuilder::SetupConstraint(UPhysicsConstraintComponent *&Con
 
 void URRevoluteJointBuilder::SetupConstraint(UPhysicsConstraintComponent *&Constraint, USDFJointAxis *&SDFJointAxis)
 {
+  //Because the limit is symetrical the rotation center has to be offseted so that upper and lower limit correspond to the sdf values
   float JointLimit = 0.5 * FMath::Abs(SDFJointAxis->Upper - SDFJointAxis->Lower);
-
-  //Because the limit is symetrical the Rotation center has to be offseted so that upper and lower limit corespond to the sdf values
   float RotationOffset = CalculateRotationOffset(JointLimit, SDFJointAxis);
+  Joint->SetOffsetPosition(FMath::RadiansToDegrees(RotationOffset));
 
   if (SDFJointAxis->Xyz.Equals(FVector::ForwardVector))
   {
-    Constraint->ConstraintInstance.SetAngularTwistLimit(EAngularConstraintMotion::ACM_Limited, FMath::RadiansToDegrees(JointLimit));
-    Constraint->ConstraintInstance.AngularRotationOffset.Roll = FMath::RadiansToDegrees(RotationOffset);
+    Constraint->ConstraintInstance.SetAngularTwistMotion(EAngularConstraintMotion::ACM_Free);
   }
   else if (SDFJointAxis->Xyz.Equals(FVector::RightVector))
   {
-    Constraint->ConstraintInstance.SetAngularSwing2Limit(EAngularConstraintMotion::ACM_Limited, FMath::RadiansToDegrees(JointLimit));
-    Constraint->ConstraintInstance.AngularRotationOffset.Pitch = FMath::RadiansToDegrees(RotationOffset);
+    Constraint->ConstraintInstance.SetAngularSwing2Motion(EAngularConstraintMotion::ACM_Free);
   }
   else
   {
-    Constraint->ConstraintInstance.SetAngularSwing1Limit(EAngularConstraintMotion::ACM_Limited, FMath::RadiansToDegrees(JointLimit));
-    Constraint->ConstraintInstance.AngularRotationOffset.Yaw = FMath::RadiansToDegrees(RotationOffset);
+    Constraint->ConstraintInstance.SetAngularSwing1Motion(EAngularConstraintMotion::ACM_Free);
   }
 }
 
@@ -150,33 +147,29 @@ const float URRevoluteJointBuilder::CalculateRotationOffset(float &JointLimit, U
   }
   else
   {
-    return 0.5 * (SDFJointAxis->Upper + SDFJointAxis->Lower);
+    return -0.5 * (SDFJointAxis->Upper + SDFJointAxis->Lower);
   }
 }
 
 void URPrismaticJointBuilder::SetupConstraint(UPhysicsConstraintComponent *&Constraint, USDFJointAxis *&SDFJointAxis)
 {
-  float JointLimit = 0;
-  float Upper = FConversions::MToCm((float)SDFJointAxis->Upper);
-  float Lower = FConversions::MToCm((float)SDFJointAxis->Lower);
-  ELinearConstraintMotion LinearConstraintMotion = ELinearConstraintMotion::LCM_Free;
+  //Because the limit is symetrical the rotation center has to be offseted so that upper and lower limit correspond to the sdf values
+  Joint->SetOffsetPosition(FConversions::MToCm((float)0.5 * FMath::Abs(SDFJointAxis->Upper + SDFJointAxis->Lower)));
 
-  if (FMath::Abs(Lower) < 10000 && FMath::Abs(Upper) < 10000)
+  if (FMath::Abs(SDFJointAxis->Lower) < 100 && FMath::Abs(SDFJointAxis->Upper) < 100)
   {
-    JointLimit = FMath::Abs(Upper) > FMath::Abs(Lower) ? FMath::Abs(Upper) : FMath::Abs(Lower);
-    LinearConstraintMotion = ELinearConstraintMotion::LCM_Limited;
-  }
-  if (SDFJointAxis->Xyz.Equals(FVector::ForwardVector))
-  {
-    Constraint->ConstraintInstance.SetLinearXLimit(LinearConstraintMotion, JointLimit);
-  }
-  else if (SDFJointAxis->Xyz.Equals(FVector::RightVector))
-  {
-    Constraint->ConstraintInstance.SetLinearYLimit(LinearConstraintMotion, JointLimit);
-  }
-  else
-  {
-    Constraint->ConstraintInstance.SetLinearZLimit(LinearConstraintMotion, JointLimit);
+    if (SDFJointAxis->Xyz.Equals(FVector::ForwardVector))
+    {
+      Constraint->ConstraintInstance.SetLinearXMotion(ELinearConstraintMotion::LCM_Free);
+    }
+    else if (SDFJointAxis->Xyz.Equals(FVector::RightVector))
+    {
+      Constraint->ConstraintInstance.SetLinearYMotion(ELinearConstraintMotion::LCM_Free);
+    }
+    else
+    {
+      Constraint->ConstraintInstance.SetLinearZMotion(ELinearConstraintMotion::LCM_Free);
+    }
   }
 }
 

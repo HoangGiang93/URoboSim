@@ -34,7 +34,7 @@ void URJointController::Init()
 
   if (GetOwner())
   {
-    GetOwner()->EnableGravity.bLinks = false;
+    GetOwner()->EnableGravity.bLinks = !bGravityCompensation;
     if (JointControllerParameters.bControllAllJoints)
     {
       TArray<FString> JointNames;
@@ -43,6 +43,10 @@ void URJointController::Init()
         JointNames.Add(Joint->GetName());
       }
       SetJointNames(JointNames);
+    }
+    else
+    {
+      SetMode();
     }
     GetOwner()->Init();
   }
@@ -74,6 +78,7 @@ void URJointController::SetMode()
           ChildLink->DisableSimulatePhysics();
         }
       }
+      
       break;
 
     case UJointControllerMode::Dynamic:

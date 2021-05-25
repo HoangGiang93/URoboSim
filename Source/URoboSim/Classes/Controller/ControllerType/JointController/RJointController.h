@@ -73,6 +73,9 @@ public:
   UPROPERTY(EditAnywhere)
   TMap<FString, FJointState> DesiredJointStates;
 
+  UPROPERTY(EditAnywhere)
+  bool bGravityCompensation;
+
 protected:
   void SetMode();
 
