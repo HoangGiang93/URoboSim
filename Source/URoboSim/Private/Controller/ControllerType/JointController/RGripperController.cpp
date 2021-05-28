@@ -32,31 +32,33 @@ void URGripperController::Tick(const float &InDeltaTime)
   {
     case UGripperState::Normal:
       SetGripperPosition();
+      Super::Tick(InDeltaTime);
       break;
 
     case UGripperState::Active:
       SetGripperPosition();
+      Super::Tick(InDeltaTime);
       break;
 
     case UGripperState::Stop:
       StopGripper();
+      Super::Tick(InDeltaTime);
       break;
 
     case UGripperState::Open:
       OpenGripper();
+      Super::Tick(InDeltaTime);
       break;
 
     case UGripperState::Closed:
       CloseGripper();
+      Super::Tick(InDeltaTime);
       break;
 
     case UGripperState::Grasped:
       GraspObject();
-      bStalled = true;
       break;
   }
-
-  Super::Tick(InDeltaTime);
 }
 
 void URGripperController::SetControllerParameters(URControllerParameter *&ControllerParameters)

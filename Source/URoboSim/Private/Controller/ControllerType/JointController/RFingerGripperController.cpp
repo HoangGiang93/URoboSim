@@ -129,16 +129,33 @@ void URFingerGripperController::CheckFingerHitEvents()
 
 void URFingerGripperController::GraspObject()
 {
-  for (TPair<FString, FJointState> &DesiredJointState : DesiredJointStates)
+  if (ARModel *Owner = GetOwner())
   {
-    if (GetOwner()->GetJoint(DesiredJointState.Key))
+    for (const TPair<FString, FGripperInformation> &GripperJoint : GripperControllerParameters.GripperJoints)
     {
-      DesiredJointState.Value.JointPosition = GetOwner()->GetJoint(DesiredJointState.Key)->GetJointState().JointPosition * FingerGripperControllerParameters.GripperHitDistance;
-      DesiredJointState.Value.JointVelocity = 0.f;
+      if (URJoint *Joint = Owner->GetJoint(GripperJoint.Key))
+      {
+        switch (JointControllerParameters.Mode)
+        {
+        case UJointControllerMode::Dynamic:
+          if (URLink *Child = Joint->GetChild())
+          {
+            if (UStaticMeshComponent *ChildMesh = Child->GetRootMesh())
+            {
+              const FVector FingerForce = 1000.f * ChildMesh->GetComponentRotation().RotateVector(Joint->GetType()->Axis);
+              ChildMesh->AddForce(FingerForce, NAME_None, true);
+            }
+          }
+          break;
+        
+        default:
+          break;
+        }
+      } 
     }
-    else
-    {
-      UE_LOG(LogRFingerGripperController, Error, TEXT("%s of %s not found"), *DesiredJointState.Key, *GetOwner()->GetName())
-    }
+  }
+  else
+  {
+    UE_LOG(LogRFingerGripperController, Error, TEXT("%s is not attached to ARModel"), *GetName())
   }
 }

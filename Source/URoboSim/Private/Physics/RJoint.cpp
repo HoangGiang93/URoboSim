@@ -180,9 +180,10 @@ void URContinuousJoint::SetPosition(const float &Position)
 		Child->AttachToComponent(Type->Constraint);
 		
 		FQuat DeltaJointRotationInJointFrame = UKismetMathLibrary::RotatorFromAxisAndAngle(Type->Axis, -Position).Quaternion();
-		FQuat JointRotationInJointFrame = DeltaJointRotationInJointFrame * InitChildMeshPoseInJointFrame.GetRotation();
-		FVector ChildLocationInJointFrame = DeltaJointRotationInJointFrame.RotateVector(InitChildMeshPoseInJointFrame.GetTranslation());
-		Child->GetRootMesh()->SetRelativeLocationAndRotation(ChildLocationInJointFrame, JointRotationInJointFrame);
+		FQuat ChildRotationInJointFrame = DeltaJointRotationInJointFrame * InitChildMeshPoseInJointFrame.GetRotation();
+		FVector ChildLocationInJointFrame = ChildRotationInJointFrame.RotateVector(InitChildMeshPoseInJointFrame.GetTranslation());
+		FTransform ChildPoseInJointFrame = FTransform(ChildRotationInJointFrame, ChildLocationInJointFrame);
+		Child->GetRootMesh()->SetRelativeTransform(ChildPoseInJointFrame);
 
 		Child->AttachToComponent(Parent->GetRootMesh());
 	}
@@ -198,9 +199,11 @@ void URPrismaticJoint::SetPosition(const float &Position)
 	{
 		Child->AttachToComponent(Type->Constraint);
 		
-		FQuat JointRotationInJointFrame = InitChildMeshPoseInJointFrame.GetRotation();
-		FVector ChildLocationInJointFrame = Type->Axis * Position + InitChildMeshPoseInJointFrame.GetTranslation();
-		Child->GetRootMesh()->SetRelativeLocationAndRotation(ChildLocationInJointFrame, JointRotationInJointFrame);
+		FQuat ChildRotationInJointFrame = InitChildMeshPoseInJointFrame.GetRotation();
+		FVector DeltaJointLocationInJointFrame = Type->Axis * Position;
+		FVector ChildLocationInJointFrame = DeltaJointLocationInJointFrame + InitChildMeshPoseInJointFrame.GetTranslation();
+		FTransform ChildPoseInJointFrame = FTransform(ChildRotationInJointFrame, ChildLocationInJointFrame);
+		Child->GetRootMesh()->SetRelativeTransform(ChildPoseInJointFrame);
 
 		Child->AttachToComponent(Parent->GetRootMesh());	
 	}
