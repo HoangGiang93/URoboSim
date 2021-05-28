@@ -9,7 +9,6 @@ UENUM()
 enum class UGripperState : uint8
 {
   Normal,
-  Active,
   Open,
   Closed,
   Grasped,

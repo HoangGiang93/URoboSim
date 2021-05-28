@@ -29,8 +29,14 @@ struct FRFingerGripperControllerParameterContainer
   GENERATED_BODY()
 
 public:
+  FRFingerGripperControllerParameterContainer()
+  {
+    GraspingStrength = 1E3f;
+  }
+
+public:
   UPROPERTY(EditAnywhere)
-  float GripperHitDistance = 0.5f;
+  float GraspingStrength;
 };
 
 UCLASS()

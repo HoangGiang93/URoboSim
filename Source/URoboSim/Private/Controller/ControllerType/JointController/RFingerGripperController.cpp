@@ -142,7 +142,7 @@ void URFingerGripperController::GraspObject()
           {
             if (UStaticMeshComponent *ChildMesh = Child->GetRootMesh())
             {
-              const FVector FingerForce = 1000.f * ChildMesh->GetComponentRotation().RotateVector(Joint->GetType()->Axis);
+              const FVector FingerForce = FingerGripperControllerParameters.GraspingStrength * ChildMesh->GetComponentRotation().RotateVector(Joint->GetType()->Axis);
               ChildMesh->AddForce(FingerForce, NAME_None, true);
             }
           }
