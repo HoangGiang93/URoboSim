@@ -13,6 +13,13 @@
 #include "RBaseController.generated.h"
 // clang-format on
 
+UENUM()
+enum class UBaseControllerMode : uint8
+{
+  Dynamic,
+  Kinematic
+};
+
 UCLASS()
 class UROBOSIM_API URBaseControllerParameter : public URControllerParameter
 {
@@ -58,14 +65,14 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FString BaseName;
+
+	UPROPERTY(EditAnywhere)
+	UBaseControllerMode Mode;
 protected:
 
 	virtual void TurnTick(float InDeltaTime);
 	virtual void MoveLinearTick(float InDeltaTime);
 	virtual void CalculateOdomStates(float InDeltaTime);
-
-	UPROPERTY(EditAnywhere)
-	bool bIsKinematic;
 
 	UPROPERTY()
 	float AngularVelocity;
@@ -95,15 +102,15 @@ protected:
 	float MaxAngularVelocity;
 };
 
-UCLASS()
-class UROBOSIM_API URBaseControllerKinematic : public URBaseController
-{
-    GENERATED_BODY()
-public:
+// UCLASS()
+// class UROBOSIM_API URBaseControllerKinematic : public URBaseController
+// {
+//     GENERATED_BODY()
+// public:
 
-  virtual void TurnTick(float InDeltaTime) override;
-  virtual void MoveLinearTick(float InDeltaTime) override;
-  virtual void SetLocation(FVector InPosition) override;
-  virtual void SetRotation(FRotator InRotator) override;
+//   virtual void TurnTick(float InDeltaTime) override;
+//   virtual void MoveLinearTick(float InDeltaTime) override;
+//   virtual void SetLocation(FVector InPosition) override;
+//   virtual void SetRotation(FRotator InRotator) override;
 
-};
+// };
